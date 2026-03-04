@@ -1,0 +1,42 @@
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: no-commit-to-branch
+        args: [--branch, main]
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: [--maxkb, "500"]
+
+  # Python — Ruff (lint + format)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.10
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  # TypeScript — ESLint
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        entry: bash -c 'cd mobile && npx eslint "${@/mobile\//}"' --
+        language: system
+        files: ^mobile/.*\.(ts|tsx)$
+        types: [file]
+
+      - id: prettier
+        name: prettier
+        entry: bash -c 'cd mobile && npx prettier --check "${@/mobile\//}"' --
+        language: system
+        files: ^mobile/.*\.(ts|tsx|json)$
+        types: [file]
