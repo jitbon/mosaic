@@ -21,7 +21,9 @@ cp .env.example .env
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_KEY` | Supabase API key |
 | `REDIS_URL` | Redis connection URL |
-| `DATABASE_URL` | PostgreSQL connection string |
+| `DATABASE_URL` | PostgreSQL connection string (requires pgvector extension) |
+| `ANTHROPIC_API_KEY` | Anthropic API key for AI chat personas |
+| `OPENAI_API_KEY` | OpenAI API key for text embeddings |
 
 ## Running
 
@@ -44,6 +46,25 @@ celery -A src.workers.celery_app beat --loglevel=info
 | `GET` | `/api/v1/story/{id}` | Get story details with articles |
 | `POST` | `/api/v1/refresh` | Trigger feed refresh |
 | `GET` | `/health` | Health check |
+| `POST` | `/api/v1/chat/{story_id}/stream` | Stream AI persona chat response (SSE) |
+| `GET` | `/api/v1/chat/{story_id}/perspectives` | Check perspective availability |
+| `GET` | `/api/v1/chat/{story_id}/conversations` | List conversations for a story |
+| `GET` | `/api/v1/chat/conversations/{id}` | Get full conversation with messages |
+| `DELETE` | `/api/v1/chat/conversations/{id}` | Delete a conversation |
+
+### Chat Streaming (SSE)
+
+`POST /api/v1/chat/{story_id}/stream` accepts `{ message, perspective, conversation_id? }` and returns server-sent events:
+
+- `conversation_start` — New conversation created (includes `conversation_id`)
+- `token` — Streamed text token
+- `citation` — Resolved citation metadata
+- `context_summarized` — Earlier messages were summarized
+- `done` — Stream complete (includes `message_id`)
+- `ended` — Conversation ended due to abuse threshold
+- `error` — Error with `code` and `message`
+
+Rate limit: 10 messages/min per story. Returns 429 with `Retry-After` header when exceeded.
 
 ## Database Migrations
 

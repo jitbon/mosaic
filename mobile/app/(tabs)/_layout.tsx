@@ -16,6 +16,25 @@ export default function TabLayout() {
           tabBarLabel: "Feed",
         }}
       />
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: "Chat History",
+          tabBarLabel: "Chats",
+        }}
+      />
+      <Tabs.Screen
+        name="story/[id]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="chat/[storyId]"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
