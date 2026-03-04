@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import StoryHeader from "../../../components/story/StoryHeader";
@@ -46,6 +53,20 @@ export default function StoryDetailScreen() {
         accessibilityLabel="Explore perspectives on this story"
       >
         <Text style={styles.chatButtonText}>Explore Perspectives</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.debateButton}
+        onPress={() =>
+          router.push({
+            pathname: "/(tabs)/debate/[storyId]",
+            params: { storyId: String(storyId), headline: story.headline },
+          })
+        }
+        accessibilityRole="button"
+        accessibilityLabel="Start a debate between AI perspectives"
+      >
+        <Text style={styles.debateButtonText}>Start Debate</Text>
       </TouchableOpacity>
 
       <View style={styles.divider} />
@@ -95,6 +116,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   chatButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  debateButton: {
+    backgroundColor: "#10B981",
+    marginHorizontal: 16,
+    marginBottom: 12,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  debateButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "700",
