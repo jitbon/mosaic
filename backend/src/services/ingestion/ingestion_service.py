@@ -16,6 +16,7 @@ from src.services.clustering.clustering_service import (
     pick_summary,
 )
 from src.services.clustering.embeddings import get_embedding
+from src.services.chat.chunking_service import chunk_story_articles
 from src.services.ingestion.gnews_client import fetch_top_headlines
 
 logger = logging.getLogger("mosaic.ingestion")
@@ -150,6 +151,28 @@ async def ingest_articles(db: Session) -> dict:
             new_articles_count += 1
 
     db.commit()
+
+    # Chunk and embed articles for RAG (chat feature)
+    for cluster in clusters:
+        # Re-query to get the story with its ID
+        story_headline = pick_headline(cluster)
+        story = (
+            db.query(Story)
+            .filter(Story.headline == story_headline)
+            .order_by(Story.created_at.desc())
+            .first()
+        )
+        if story:
+            try:
+                chunk_count = chunk_story_articles(db, story.id)
+                logger.info(
+                    "Chunked story %d (%s): %d chunks",
+                    story.id,
+                    story_headline[:50],
+                    chunk_count,
+                )
+            except Exception as e:
+                logger.error("Failed to chunk story %d: %s", story.id, e)
 
     logger.info(
         "Ingested %d new stories with %d articles",

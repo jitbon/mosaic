@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 import StoryHeader from "../../../components/story/StoryHeader";
 import SourceList from "../../../components/story/SourceList";
@@ -8,6 +8,7 @@ import { useStory } from "../../../hooks/useStory";
 
 export default function StoryDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
   const storyId = parseInt(id ?? "0", 10);
   const { story, isLoading, error } = useStory(storyId);
 
@@ -32,6 +33,21 @@ export default function StoryDetailScreen() {
   return (
     <ScrollView style={styles.container}>
       <StoryHeader story={story} />
+
+      <TouchableOpacity
+        style={styles.chatButton}
+        onPress={() =>
+          router.push({
+            pathname: "/(tabs)/chat/[storyId]",
+            params: { storyId: String(storyId), headline: story.headline },
+          })
+        }
+        accessibilityRole="button"
+        accessibilityLabel="Explore perspectives on this story"
+      >
+        <Text style={styles.chatButtonText}>Explore Perspectives</Text>
+      </TouchableOpacity>
+
       <View style={styles.divider} />
       <Text style={styles.sectionTitle}>Sources</Text>
       <SourceList articles={story.articles} />
@@ -69,5 +85,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 4,
+  },
+  chatButton: {
+    backgroundColor: "#8B5CF6",
+    marginHorizontal: 16,
+    marginVertical: 12,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  chatButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
   },
 });

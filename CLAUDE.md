@@ -3,6 +3,8 @@
 Auto-generated from all feature plans. Last updated: 2026-03-04
 
 ## Active Technologies
+- Python 3.11 (backend), TypeScript 5.x (mobile) + FastAPI, Anthropic Claude SDK, SQLAlchemy, React Native + Expo, expo-sqlite (002-ai-persona-chat)
+- PostgreSQL + pgvector (backend), expo-sqlite (mobile local chat history) (002-ai-persona-chat)
 
 - (001-biased-news-feed)
 
@@ -22,6 +24,7 @@ tests/
 : Follow standard conventions
 
 ## Recent Changes
+- 002-ai-persona-chat: Added Python 3.11 (backend), TypeScript 5.x (mobile) + FastAPI, Anthropic Claude SDK, SQLAlchemy, React Native + Expo, expo-sqlite
 
 - 001-biased-news-feed: Added
 
