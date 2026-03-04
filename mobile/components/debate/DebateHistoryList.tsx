@@ -7,12 +7,13 @@ import {
   View,
 } from "react-native";
 
+import { Colors } from "../../constants/theme";
 import type { DebateHistoryItem } from "../../hooks/useDebateHistory";
 
 const PERSPECTIVE_COLORS: Record<string, string> = {
-  left: "#3B82F6",
-  center: "#8B5CF6",
-  right: "#EF4444",
+  left: Colors.left,
+  center: Colors.center,
+  right: Colors.right,
 };
 
 interface Props {
@@ -63,7 +64,10 @@ export default function DebateHistoryList({
                   key={p}
                   style={[
                     styles.personaBadge,
-                    { backgroundColor: PERSPECTIVE_COLORS[p] || "#6B7280" },
+                    {
+                      backgroundColor:
+                        PERSPECTIVE_COLORS[p] || Colors.textMuted,
+                    },
                   ]}
                 >
                   <Text style={styles.personaBadgeText}>
@@ -107,7 +111,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.cardBg,
     borderRadius: 10,
     padding: 12,
     gap: 6,
@@ -120,7 +124,7 @@ const styles = StyleSheet.create({
   headline: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#111827",
+    color: Colors.textPrimary,
   },
   meta: {
     flexDirection: "row",
@@ -139,15 +143,15 @@ const styles = StyleSheet.create({
   personaBadgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: Colors.cardBg,
   },
   stats: {
     fontSize: 12,
-    color: "#6B7280",
+    color: Colors.textMuted,
   },
   preview: {
     fontSize: 13,
-    color: "#4B5563",
+    color: Colors.textSecondary,
     fontStyle: "italic",
   },
   footer: {
@@ -157,18 +161,18 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 11,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
   },
   status: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#6B7280",
+    color: Colors.textMuted,
   },
   statusActive: {
-    color: "#10B981",
+    color: Colors.success,
   },
   statusCompleted: {
-    color: "#6B7280",
+    color: Colors.textMuted,
   },
   empty: {
     flex: 1,
@@ -179,11 +183,11 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#6B7280",
+    color: Colors.textMuted,
   },
   emptySubtext: {
     fontSize: 13,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
     marginTop: 4,
   },
 });

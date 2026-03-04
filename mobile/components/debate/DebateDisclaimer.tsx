@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { Colors } from "../../constants/theme";
 import type { Perspective } from "../../types/chat";
 
 const PERSPECTIVE_LABELS: Record<Perspective, string> = {
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FEF3C7",
+    backgroundColor: Colors.warningBg,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginHorizontal: 12,
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
     fontSize: 12,
-    color: "#92400E",
+    color: Colors.warningText,
     lineHeight: 16,
   },
   bold: {

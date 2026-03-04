@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 
+import { Colors } from "../../../constants/theme";
 import DebatePersonaSelector from "../../../components/debate/DebatePersonaSelector";
 import DebateView from "../../../components/debate/DebateView";
 import { useDebate } from "../../../hooks/useDebate";
@@ -95,7 +96,7 @@ export default function DebateScreen() {
   if (loadingAvailability) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#2563eb" />
+        <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
@@ -153,19 +154,19 @@ export default function DebateScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: Colors.surfaceBg,
   },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
-    backgroundColor: "#f8fafc",
+    backgroundColor: Colors.surfaceBg,
   },
   headline: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#111827",
+    color: Colors.textPrimary,
     textAlign: "center",
     paddingHorizontal: 16,
     paddingTop: 16,
@@ -173,18 +174,18 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    color: "#ef4444",
+    color: Colors.errorFg,
     textAlign: "center",
     marginBottom: 16,
   },
   backButton: {
     paddingVertical: 10,
     paddingHorizontal: 24,
-    backgroundColor: "#6B7280",
+    backgroundColor: Colors.neutral,
     borderRadius: 8,
   },
   backButtonText: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
     fontSize: 14,
     fontWeight: "600",
   },

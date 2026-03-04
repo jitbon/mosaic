@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 
 import { StoryDetail } from "../../types/story";
+import { Colors } from "../../constants/theme";
 import BiasBar from "../feed/BiasBar";
 import BlindspotBadge from "../feed/BlindspotBadge";
 
@@ -25,9 +26,7 @@ export default function StoryHeader({ story }: StoryHeaderProps) {
       )}
       <View style={styles.content}>
         <Text style={styles.headline}>{story.headline}</Text>
-        {story.summary && (
-          <Text style={styles.summary}>{story.summary}</Text>
-        )}
+        {story.summary && <Text style={styles.summary}>{story.summary}</Text>}
         <BiasBar
           leftCount={story.left_count}
           centerCount={story.center_count}
@@ -46,7 +45,7 @@ export default function StoryHeader({ story }: StoryHeaderProps) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.cardBg,
   },
   image: {
     width: "100%",
@@ -58,18 +57,18 @@ const styles = StyleSheet.create({
   headline: {
     fontSize: 20,
     fontWeight: "800",
-    color: "#111827",
+    color: Colors.textPrimary,
     lineHeight: 26,
   },
   summary: {
     fontSize: 14,
-    color: "#4b5563",
+    color: Colors.textSecondary,
     marginTop: 10,
     lineHeight: 20,
   },
   sourceCount: {
     fontSize: 12,
-    color: "#9ca3af",
+    color: Colors.textFaint,
     marginTop: 12,
   },
 });

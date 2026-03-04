@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { Colors } from "../../constants/theme";
 
 interface BlindspotBadgeProps {
   perspective: string;
@@ -7,22 +8,28 @@ interface BlindspotBadgeProps {
 }
 
 const PERSPECTIVE_COLORS: Record<string, string> = {
-  left: "#3b82f6",
-  center: "#a855f7",
-  right: "#ef4444",
+  left: Colors.left,
+  center: Colors.center,
+  right: Colors.right,
 };
 
 export default function BlindspotBadge({
   perspective,
   onPress,
 }: BlindspotBadgeProps) {
-  const color = PERSPECTIVE_COLORS[perspective] || "#f59e0b";
+  const color = PERSPECTIVE_COLORS[perspective] || Colors.neutral;
 
   return (
     <Pressable onPress={onPress}>
-      <View style={[styles.badge, { backgroundColor: color + "20", borderColor: color }]}>
+      <View
+        style={[
+          styles.badge,
+          { backgroundColor: color + "20", borderColor: color },
+        ]}
+      >
         <Text style={[styles.text, { color }]}>
-          Blindspot — {perspective.charAt(0).toUpperCase() + perspective.slice(1)}
+          Blindspot —{" "}
+          {perspective.charAt(0).toUpperCase() + perspective.slice(1)}
         </Text>
       </View>
     </Pressable>

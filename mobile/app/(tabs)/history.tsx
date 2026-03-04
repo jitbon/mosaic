@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useRouter } from "expo-router";
+import { Colors } from "../../constants/theme";
 
 import ChatHistoryList from "../../components/chat/ChatHistoryList";
 import DebateHistoryList from "../../components/debate/DebateHistoryList";
@@ -110,13 +111,13 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: Colors.surfaceBg,
   },
   tabs: {
     flexDirection: "row",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.cardBg,
     borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor: Colors.border,
   },
   tab: {
     flex: 1,
@@ -125,14 +126,14 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: "#2563EB",
+    borderBottomColor: Colors.primary,
   },
   tabText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#6B7280",
+    color: Colors.textMuted,
   },
   activeTabText: {
-    color: "#2563EB",
+    color: Colors.primary,
   },
 });

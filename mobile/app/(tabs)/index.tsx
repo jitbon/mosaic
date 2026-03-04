@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 
+import { Colors } from "../../constants/theme";
 import FeedList from "../../components/feed/FeedList";
 import FilterButtons from "../../components/feed/FilterButtons";
 import { useFeed } from "../../hooks/useFeed";
@@ -26,7 +27,7 @@ export default function FeedScreen() {
   if (isLoading && stories.length === 0) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#2563eb" />
+        <ActivityIndicator size="large" color={Colors.primary} />
         <Text style={styles.loadingText}>Loading stories...</Text>
       </View>
     );
@@ -65,29 +66,29 @@ export default function FeedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: Colors.appBg,
   },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: Colors.appBg,
   },
   loadingText: {
     marginTop: 12,
     fontSize: 14,
-    color: "#6b7280",
+    color: Colors.textMuted,
   },
   errorText: {
     fontSize: 14,
-    color: "#ef4444",
+    color: Colors.errorFg,
     textAlign: "center",
     lineHeight: 20,
   },
   updatedText: {
     fontSize: 11,
-    color: "#9ca3af",
+    color: Colors.textFaint,
     paddingHorizontal: 16,
     paddingBottom: 4,
   },

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { Colors } from "../../constants/theme";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 
@@ -84,7 +85,7 @@ function getTimeAgo(dateStr: string): string {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.cardBg,
     borderRadius: 12,
     marginHorizontal: 16,
     marginVertical: 6,
@@ -105,18 +106,18 @@ const styles = StyleSheet.create({
   headline: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#111827",
+    color: Colors.textPrimary,
     lineHeight: 22,
   },
   summary: {
     fontSize: 13,
-    color: "#6b7280",
+    color: Colors.textMuted,
     marginTop: 6,
     lineHeight: 18,
   },
   timestamp: {
     fontSize: 11,
-    color: "#9ca3af",
+    color: Colors.textFaint,
     marginTop: 8,
   },
 });

@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 
+import { Colors } from "../../constants/theme";
 import type { Perspective } from "../../types/chat";
 import type { DebateTurnState } from "../../hooks/useDebate";
 import type { DebateRole } from "../../types/debate";
@@ -91,7 +92,7 @@ export default function DebateView({
         {/* Loading indicator between turns */}
         {isStreaming && !currentStreamingRole && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="small" color="#6B7280" />
+            <ActivityIndicator size="small" color={Colors.textMuted} />
             <Text style={styles.loadingText}>Next persona preparing...</Text>
           </View>
         )}
@@ -153,18 +154,18 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 13,
-    color: "#6B7280",
+    color: Colors.textMuted,
   },
   errorContainer: {
     marginHorizontal: 12,
     marginVertical: 8,
     padding: 12,
-    backgroundColor: "#FEF2F2",
+    backgroundColor: Colors.errorBg,
     borderRadius: 8,
   },
   errorText: {
     fontSize: 13,
-    color: "#DC2626",
+    color: Colors.errorText,
   },
   roundActions: {
     alignItems: "center",
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
   },
   roundCompleteText: {
     fontSize: 13,
-    color: "#6B7280",
+    color: Colors.textMuted,
     fontWeight: "600",
   },
   roundButtonRow: {
@@ -181,24 +182,24 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   nextRoundButton: {
-    backgroundColor: "#10B981",
+    backgroundColor: Colors.success,
     paddingVertical: 10,
     paddingHorizontal: 32,
     borderRadius: 8,
   },
   nextRoundButtonText: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
     fontSize: 14,
     fontWeight: "700",
   },
   endDebateButton: {
-    backgroundColor: "#6B7280",
+    backgroundColor: Colors.neutral,
     paddingVertical: 10,
     paddingHorizontal: 24,
     borderRadius: 8,
   },
   endDebateButtonText: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
     fontSize: 14,
     fontWeight: "600",
   },

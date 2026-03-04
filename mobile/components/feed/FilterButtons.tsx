@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { Colors } from "../../constants/theme";
 
 import { FeedFilter } from "../../types/feed";
 
@@ -48,17 +49,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: "#e5e7eb",
+    backgroundColor: Colors.skeletonBase,
   },
   active: {
-    backgroundColor: "#2563eb",
+    backgroundColor: Colors.primary,
   },
   label: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#4b5563",
+    color: Colors.textSecondary,
   },
   activeLabel: {
-    color: "#fff",
+    color: Colors.cardBg,
   },
 });

@@ -2,22 +2,23 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable, Linking } from "react-native";
 
 import { Article } from "../../types/story";
+import { Colors, Spectrum } from "../../constants/theme";
 
 interface ArticleLinkProps {
   article: Article;
 }
 
 const BIAS_COLORS: Record<string, string> = {
-  left: "#3b82f6",
-  "center-left": "#8b5cf6",
-  center: "#a855f7",
-  "center-right": "#f97316",
-  right: "#ef4444",
+  left: Colors.left,
+  "center-left": Spectrum.centerLeft,
+  center: Colors.center,
+  "center-right": Spectrum.centerRight,
+  right: Colors.right,
 };
 
 export default function ArticleLink({ article }: ArticleLinkProps) {
   const biasRating = article.source?.bias_rating ?? "center";
-  const badgeColor = BIAS_COLORS[biasRating] || "#6b7280";
+  const badgeColor = BIAS_COLORS[biasRating] || Colors.neutral;
 
   const handlePress = () => {
     Linking.openURL(article.url);
@@ -26,7 +27,12 @@ export default function ArticleLink({ article }: ArticleLinkProps) {
   return (
     <Pressable style={styles.container} onPress={handlePress}>
       <View style={styles.row}>
-        <View style={[styles.biasBadge, { backgroundColor: badgeColor + "20", borderColor: badgeColor }]}>
+        <View
+          style={[
+            styles.biasBadge,
+            { backgroundColor: badgeColor + "20", borderColor: badgeColor },
+          ]}
+        >
           <Text style={[styles.biasText, { color: badgeColor }]}>
             {biasRating.charAt(0).toUpperCase() + biasRating.slice(1)}
           </Text>
@@ -49,13 +55,13 @@ export default function ArticleLink({ article }: ArticleLinkProps) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.cardBg,
     padding: 14,
     marginHorizontal: 16,
     marginVertical: 4,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#f3f4f6",
+    borderColor: Colors.skeletonShine,
   },
   row: {
     flexDirection: "row",
@@ -76,18 +82,18 @@ const styles = StyleSheet.create({
   sourceName: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#374151",
+    color: Colors.textSecondary,
     flex: 1,
   },
   title: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#111827",
+    color: Colors.textPrimary,
     lineHeight: 19,
   },
   snippet: {
     fontSize: 12,
-    color: "#6b7280",
+    color: Colors.textMuted,
     marginTop: 4,
     lineHeight: 16,
   },

@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 
+import { Colors } from "../../constants/theme";
 import { DEBATE_CONFIG } from "../../constants/config";
 
 interface Props {
@@ -39,7 +40,7 @@ export default function ModeratorInput({ disabled, onSubmit }: Props) {
               ? "Wait for the round to complete..."
               : "Ask a question or steer the debate..."
           }
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.textFaint}
           multiline
           maxLength={DEBATE_CONFIG.maxMessageLength + 50}
           editable={!disabled}
@@ -73,9 +74,9 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.cardBg,
     borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
+    borderTopColor: Colors.border,
   },
   inputRow: {
     flexDirection: "row",
@@ -85,39 +86,39 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: Colors.borderLight,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 14,
-    color: "#1F2937",
+    color: Colors.textSecondary,
     maxHeight: 100,
   },
   inputDisabled: {
-    backgroundColor: "#F3F4F6",
-    color: "#9CA3AF",
+    backgroundColor: Colors.skeletonShine,
+    color: Colors.textFaint,
   },
   sendButton: {
-    backgroundColor: "#10B981",
+    backgroundColor: Colors.success,
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
   },
   sendButtonDisabled: {
-    backgroundColor: "#D1D5DB",
+    backgroundColor: Colors.borderLight,
   },
   sendButtonText: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
     fontSize: 14,
     fontWeight: "700",
   },
   charCount: {
     fontSize: 11,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
     textAlign: "right",
     marginTop: 2,
   },
   charCountOver: {
-    color: "#EF4444",
+    color: Colors.errorFg,
   },
 });

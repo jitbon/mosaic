@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { Colors } from "../../constants/theme";
 import type { Perspective, PerspectiveAvailability } from "../../types/chat";
 
 const PERSPECTIVES: { key: Perspective; label: string; color: string }[] = [
-  { key: "left", label: "Left", color: "#3B82F6" },
-  { key: "center", label: "Center", color: "#8B5CF6" },
-  { key: "right", label: "Right", color: "#EF4444" },
+  { key: "left", label: "Left", color: Colors.left },
+  { key: "center", label: "Center", color: Colors.center },
+  { key: "right", label: "Right", color: Colors.right },
 ];
 
 interface Props {
@@ -113,12 +114,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#111827",
+    color: Colors.textPrimary,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: "#6B7280",
+    color: Colors.textMuted,
     marginBottom: 24,
   },
   options: {
@@ -132,51 +133,51 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: "#D1D5DB",
+    borderColor: Colors.borderLight,
     alignItems: "center",
     gap: 4,
   },
   optionDisabled: {
     opacity: 0.4,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: Colors.skeletonShine,
   },
   optionLabel: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#374151",
+    color: Colors.textSecondary,
   },
   optionLabelActive: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
   },
   optionLabelDisabled: {
-    color: "#9CA3AF",
+    color: Colors.textFaint,
   },
   noSources: {
     fontSize: 11,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
   },
   sourceCount: {
     fontSize: 11,
-    color: "#6B7280",
+    color: Colors.textMuted,
   },
   sourceCountActive: {
     color: "rgba(255,255,255,0.8)",
   },
   startButton: {
-    backgroundColor: "#10B981",
+    backgroundColor: Colors.success,
     paddingVertical: 14,
     paddingHorizontal: 48,
     borderRadius: 12,
   },
   startButtonDisabled: {
-    backgroundColor: "#D1D5DB",
+    backgroundColor: Colors.borderLight,
   },
   startButtonText: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
     fontSize: 16,
     fontWeight: "700",
   },
   startButtonTextDisabled: {
-    color: "#9CA3AF",
+    color: Colors.textFaint,
   },
 });

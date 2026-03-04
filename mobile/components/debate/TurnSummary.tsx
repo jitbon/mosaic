@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { Colors, DebateRoleColors } from "../../constants/theme";
 import type { DebateRole } from "../../types/debate";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -8,13 +9,6 @@ const ROLE_LABELS: Record<string, string> = {
   persona_center: "Center",
   persona_right: "Right",
   moderator: "You",
-};
-
-const ROLE_COLORS: Record<string, string> = {
-  persona_left: "#3B82F6",
-  persona_center: "#8B5CF6",
-  persona_right: "#EF4444",
-  moderator: "#6B7280",
 };
 
 interface Props {
@@ -25,7 +19,7 @@ interface Props {
 
 export default function TurnSummary({ role, summary, onExpand }: Props) {
   const label = ROLE_LABELS[role] || role;
-  const color = ROLE_COLORS[role] || "#6B7280";
+  const color = DebateRoleColors[role] || Colors.textMuted;
 
   return (
     <TouchableOpacity
@@ -54,7 +48,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginHorizontal: 12,
     marginVertical: 2,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: Colors.surfaceBg,
     borderRadius: 8,
     gap: 8,
   },
@@ -66,16 +60,16 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: Colors.cardBg,
   },
   summaryText: {
     flex: 1,
     fontSize: 13,
-    color: "#374151",
+    color: Colors.textSecondary,
     lineHeight: 18,
   },
   chevron: {
     fontSize: 14,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
   },
 });

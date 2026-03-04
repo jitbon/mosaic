@@ -1,11 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Colors } from "../../../constants/theme";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import ChatBubble from "../../../components/chat/ChatBubble";
 import ChatDisclaimer from "../../../components/chat/ChatDisclaimer";
@@ -70,7 +66,11 @@ export default function ChatScreen() {
 
     // Refresh conversation counts for all perspectives
     getConversationsForStory(storyId).then((convs) => {
-      const counts: Record<Perspective, number> = { left: 0, center: 0, right: 0 };
+      const counts: Record<Perspective, number> = {
+        left: 0,
+        center: 0,
+        right: 0,
+      };
       for (const conv of convs) {
         counts[conv.perspective] = conv.messages.length;
       }
@@ -81,7 +81,10 @@ export default function ChatScreen() {
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (messages.length > 0 || streamingText) {
-      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+      setTimeout(
+        () => flatListRef.current?.scrollToEnd({ animated: true }),
+        100,
+      );
     }
   }, [messages.length, streamingText]);
 
@@ -103,7 +106,7 @@ export default function ChatScreen() {
         onCitationPress={handleCitationPress}
       />
     ),
-    [handleCitationPress]
+    [handleCitationPress],
   );
 
   if (!storyId) {
@@ -142,8 +145,8 @@ export default function ChatScreen() {
           !isStreaming ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>
-                Ask a question to start exploring the{" "}
-                {perspective} perspective on this story.
+                Ask a question to start exploring the {perspective} perspective
+                on this story.
               </Text>
             </View>
           ) : null
@@ -182,7 +185,7 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.cardBg,
   },
   center: {
     flex: 1,
@@ -201,12 +204,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
     textAlign: "center",
     lineHeight: 20,
   },
   errorContainer: {
-    backgroundColor: "#FEE2E2",
+    backgroundColor: Colors.errorBg,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginHorizontal: 12,
@@ -214,17 +217,17 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 13,
-    color: "#991B1B",
+    color: Colors.errorText,
   },
   endedContainer: {
-    backgroundColor: "#F3F4F6",
+    backgroundColor: Colors.skeletonShine,
     paddingHorizontal: 16,
     paddingVertical: 12,
     alignItems: "center",
   },
   endedText: {
     fontSize: 13,
-    color: "#6B7280",
+    color: Colors.textMuted,
     textAlign: "center",
   },
 });

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { CHAT_CONFIG } from "../../constants/config";
+import { Colors } from "../../constants/theme";
 
 interface Props {
   onSend: (message: string) => void;
@@ -46,7 +47,7 @@ export default function ChatInput({
             value={text}
             onChangeText={setText}
             placeholder={placeholder}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={Colors.textFaint}
             multiline
             maxLength={CHAT_CONFIG.maxMessageLength + 10}
             editable={!disabled}
@@ -68,9 +69,7 @@ export default function ChatInput({
           </TouchableOpacity>
         </View>
         {text.length > CHAT_CONFIG.maxMessageLength - 100 && (
-          <Text
-            style={[styles.charCount, isOverLimit && styles.charCountOver]}
-          >
+          <Text style={[styles.charCount, isOverLimit && styles.charCountOver]}>
             {remaining}
           </Text>
         )}
@@ -82,8 +81,8 @@ export default function ChatInput({
 const styles = StyleSheet.create({
   container: {
     borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
-    backgroundColor: "#FFFFFF",
+    borderTopColor: Colors.border,
+    backgroundColor: Colors.cardBg,
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
@@ -94,40 +93,40 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: Colors.surfaceBg,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 10,
     fontSize: 15,
     maxHeight: 100,
-    color: "#1F2937",
+    color: Colors.textSecondary,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: Colors.border,
   },
   inputDisabled: {
     opacity: 0.5,
   },
   sendButton: {
-    backgroundColor: "#3B82F6",
+    backgroundColor: Colors.primary,
     borderRadius: 20,
     paddingHorizontal: 18,
     paddingVertical: 10,
   },
   sendButtonDisabled: {
-    backgroundColor: "#D1D5DB",
+    backgroundColor: Colors.borderLight,
   },
   sendButtonText: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
     fontWeight: "600",
     fontSize: 15,
   },
   charCount: {
     fontSize: 11,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
     textAlign: "right",
     marginTop: 4,
   },
   charCountOver: {
-    color: "#EF4444",
+    color: Colors.errorFg,
   },
 });

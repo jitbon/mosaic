@@ -7,15 +7,24 @@ import {
   ActivityIndicator,
 } from "react-native";
 
+import { Colors } from "../../constants/theme";
 import type { Perspective, PerspectiveAvailability } from "../../types/chat";
 
 const PERSPECTIVE_CONFIG: Record<
   Perspective,
   { label: string; color: string; activeColor: string }
 > = {
-  left: { label: "Left", color: "#3B82F6", activeColor: "#2563EB" },
-  center: { label: "Center", color: "#8B5CF6", activeColor: "#7C3AED" },
-  right: { label: "Right", color: "#EF4444", activeColor: "#DC2626" },
+  left: { label: "Left", color: Colors.left, activeColor: Colors.leftActive },
+  center: {
+    label: "Center",
+    color: Colors.center,
+    activeColor: Colors.centerActive,
+  },
+  right: {
+    label: "Right",
+    color: Colors.right,
+    activeColor: Colors.rightActive,
+  },
 };
 
 interface Props {
@@ -36,7 +45,7 @@ export default function PerspectiveSelector({
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="small" color="#8B5CF6" />
+        <ActivityIndicator size="small" color={Colors.center} />
       </View>
     );
   }
@@ -77,9 +86,7 @@ export default function PerspectiveSelector({
               <Text style={styles.unavailableText}>No sources</Text>
             )}
             {messageCount > 0 && isAvailable && (
-              <View
-                style={[styles.badge, { backgroundColor: config.color }]}
-              >
+              <View style={[styles.badge, { backgroundColor: config.color }]}>
                 <Text style={styles.badgeText}>{messageCount}</Text>
               </View>
             )}
@@ -96,38 +103,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     gap: 8,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: Colors.surfaceBg,
     borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor: Colors.border,
   },
   tab: {
     flex: 1,
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 8,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.cardBg,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: Colors.border,
   },
   disabledTab: {
-    backgroundColor: "#F3F4F6",
+    backgroundColor: Colors.skeletonShine,
     opacity: 0.6,
   },
   tabText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
+    color: Colors.textSecondary,
   },
   activeTabText: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
   },
   disabledTabText: {
-    color: "#9CA3AF",
+    color: Colors.textFaint,
   },
   unavailableText: {
     fontSize: 10,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
     marginTop: 2,
   },
   badge: {
@@ -144,6 +151,6 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: Colors.cardBg,
   },
 });

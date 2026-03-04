@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { Colors } from "../../../constants/theme";
 
 import StoryHeader from "../../../components/story/StoryHeader";
 import SourceList from "../../../components/story/SourceList";
@@ -22,7 +23,7 @@ export default function StoryDetailScreen() {
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#2563eb" />
+        <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
@@ -79,36 +80,36 @@ export default function StoryDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: Colors.surfaceBg,
   },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
-    backgroundColor: "#f8fafc",
+    backgroundColor: Colors.surfaceBg,
   },
   errorText: {
     fontSize: 14,
-    color: "#ef4444",
+    color: Colors.errorFg,
     textAlign: "center",
   },
   divider: {
     height: 1,
-    backgroundColor: "#e5e7eb",
+    backgroundColor: Colors.border,
     marginHorizontal: 16,
     marginVertical: 8,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#111827",
+    color: Colors.textPrimary,
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 4,
   },
   chatButton: {
-    backgroundColor: "#8B5CF6",
+    backgroundColor: Colors.center,
     marginHorizontal: 16,
     marginVertical: 12,
     paddingVertical: 14,
@@ -116,12 +117,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   chatButtonText: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
     fontSize: 16,
     fontWeight: "700",
   },
   debateButton: {
-    backgroundColor: "#10B981",
+    backgroundColor: Colors.success,
     marginHorizontal: 16,
     marginBottom: 12,
     paddingVertical: 14,
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   debateButtonText: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
     fontSize: 16,
     fontWeight: "700",
   },

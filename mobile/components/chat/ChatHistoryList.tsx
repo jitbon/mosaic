@@ -1,13 +1,8 @@
 import { useRouter } from "expo-router";
 import React, { useCallback } from "react";
-import {
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { Colors } from "../../constants/theme";
 import type {
   ChatHistoryItem,
   GroupedChatHistory,
@@ -15,9 +10,9 @@ import type {
 import type { Perspective } from "../../types/chat";
 
 const PERSPECTIVE_COLORS: Record<Perspective, string> = {
-  left: "#3B82F6",
-  center: "#8B5CF6",
-  right: "#EF4444",
+  left: Colors.left,
+  center: Colors.center,
+  right: Colors.right,
 };
 
 interface Props {
@@ -93,7 +88,7 @@ function StoryGroup({
         },
       });
     },
-    [router, group.story_headline]
+    [router, group.story_headline],
   );
 
   return (
@@ -123,7 +118,7 @@ export default function ChatHistoryList({
     ({ item }: { item: GroupedChatHistory }) => (
       <StoryGroup group={item} onDelete={onDelete} />
     ),
-    [onDelete]
+    [onDelete],
   );
 
   if (!loading && groups.length === 0) {
@@ -155,16 +150,16 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   storyGroup: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.cardBg,
     borderRadius: 12,
     padding: 12,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: Colors.border,
   },
   storyHeadline: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#1F2937",
+    color: Colors.textSecondary,
     marginBottom: 8,
     lineHeight: 20,
   },
@@ -173,7 +168,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
     borderTopWidth: 1,
-    borderTopColor: "#F3F4F6",
+    borderTopColor: Colors.skeletonShine,
   },
   perspectiveDot: {
     width: 8,
@@ -187,16 +182,16 @@ const styles = StyleSheet.create({
   perspectiveLabel: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
+    color: Colors.textSecondary,
   },
   messageCount: {
     fontSize: 12,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
     marginTop: 1,
   },
   timeAgo: {
     fontSize: 12,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
   },
   emptyContainer: {
     flex: 1,
@@ -207,12 +202,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 17,
     fontWeight: "700",
-    color: "#374151",
+    color: Colors.textSecondary,
     marginBottom: 8,
   },
   emptyText: {
     fontSize: 14,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
     textAlign: "center",
     lineHeight: 20,
   },
