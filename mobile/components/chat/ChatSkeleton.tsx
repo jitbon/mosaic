@@ -1,15 +1,31 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, View } from "react-native";
 
-function PulsingBar({ width, height = 12 }: { width: number | string; height?: number }) {
+import { Colors } from "../../constants/theme";
+
+function PulsingBar({
+  width,
+  height = 12,
+}: {
+  width: number | string;
+  height?: number;
+}) {
   const opacity = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {
     const animation = Animated.loop(
       Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.7, duration: 800, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.3, duration: 800, useNativeDriver: true }),
-      ])
+        Animated.timing(opacity, {
+          toValue: 0.7,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.3,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]),
     );
     animation.start();
     return () => animation.stop();
@@ -17,17 +33,19 @@ function PulsingBar({ width, height = 12 }: { width: number | string; height?: n
 
   return (
     <Animated.View
-      style={[
-        styles.bar,
-        { width: width as number, height, opacity },
-      ]}
+      style={[styles.bar, { width: width as number, height, opacity }]}
     />
   );
 }
 
 function SkeletonBubble({ isUser }: { isUser: boolean }) {
   return (
-    <View style={[styles.bubble, isUser ? styles.userBubble : styles.assistantBubble]}>
+    <View
+      style={[
+        styles.bubble,
+        isUser ? styles.userBubble : styles.assistantBubble,
+      ]}
+    >
       <PulsingBar width="90%" />
       <PulsingBar width="70%" />
       {!isUser && <PulsingBar width="50%" />}
@@ -63,7 +81,7 @@ export default function ChatSkeleton() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.cardBg,
   },
   selectorRow: {
     flexDirection: "row",
@@ -89,16 +107,16 @@ const styles = StyleSheet.create({
   },
   userBubble: {
     alignSelf: "flex-end",
-    backgroundColor: "#DBEAFE",
+    backgroundColor: Colors.primaryLight,
     borderBottomRightRadius: 4,
   },
   assistantBubble: {
     alignSelf: "flex-start",
-    backgroundColor: "#F3F4F6",
+    backgroundColor: Colors.skeletonShine,
     borderBottomLeftRadius: 4,
   },
   bar: {
-    backgroundColor: "#D1D5DB",
+    backgroundColor: Colors.borderLight,
     borderRadius: 4,
   },
 });

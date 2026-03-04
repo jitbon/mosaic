@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { Colors } from "../../constants/theme";
 
 interface BiasBarProps {
   leftCount: number;
@@ -7,7 +8,11 @@ interface BiasBarProps {
   rightCount: number;
 }
 
-export default function BiasBar({ leftCount, centerCount, rightCount }: BiasBarProps) {
+export default function BiasBar({
+  leftCount,
+  centerCount,
+  rightCount,
+}: BiasBarProps) {
   const total = leftCount + centerCount + rightCount;
   if (total === 0) return null;
 
@@ -22,7 +27,9 @@ export default function BiasBar({ leftCount, centerCount, rightCount }: BiasBarP
           <View style={[styles.segment, styles.left, { flex: leftCount }]} />
         )}
         {centerPct > 0 && (
-          <View style={[styles.segment, styles.center, { flex: centerCount }]} />
+          <View
+            style={[styles.segment, styles.center, { flex: centerCount }]}
+          />
         )}
         {rightPct > 0 && (
           <View style={[styles.segment, styles.right, { flex: rightCount }]} />
@@ -46,19 +53,19 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     overflow: "hidden",
-    backgroundColor: "#e5e7eb",
+    backgroundColor: Colors.skeletonBase,
   },
   segment: {
     height: "100%",
   },
   left: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: Colors.left,
   },
   center: {
-    backgroundColor: "#a855f7",
+    backgroundColor: Colors.center,
   },
   right: {
-    backgroundColor: "#ef4444",
+    backgroundColor: Colors.right,
   },
   labels: {
     flexDirection: "row",
@@ -70,12 +77,12 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   leftText: {
-    color: "#3b82f6",
+    color: Colors.left,
   },
   centerText: {
-    color: "#a855f7",
+    color: Colors.center,
   },
   rightText: {
-    color: "#ef4444",
+    color: Colors.right,
   },
 });

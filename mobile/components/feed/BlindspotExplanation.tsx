@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Modal, Pressable } from "react-native";
+import { Colors } from "../../constants/theme";
 
 interface BlindspotExplanationProps {
   visible: boolean;
@@ -50,7 +51,9 @@ export default function BlindspotExplanation({
           {missingPerspectives.length > 0 && (
             <Text style={styles.description}>
               {missingPerspectives.join(" and ")}{" "}
-              {missingPerspectives.length === 1 ? "perspective has" : "perspectives have"}{" "}
+              {missingPerspectives.length === 1
+                ? "perspective has"
+                : "perspectives have"}{" "}
               little to no coverage of this story.
             </Text>
           )}
@@ -58,8 +61,12 @@ export default function BlindspotExplanation({
           <View style={styles.breakdown}>
             <Text style={styles.breakdownTitle}>Coverage Breakdown:</Text>
             <Text style={styles.breakdownItem}>Left: {leftCount} sources</Text>
-            <Text style={styles.breakdownItem}>Center: {centerCount} sources</Text>
-            <Text style={styles.breakdownItem}>Right: {rightCount} sources</Text>
+            <Text style={styles.breakdownItem}>
+              Center: {centerCount} sources
+            </Text>
+            <Text style={styles.breakdownItem}>
+              Right: {rightCount} sources
+            </Text>
           </View>
 
           <Pressable style={styles.closeButton} onPress={onClose}>
@@ -80,7 +87,7 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   modal: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.cardBg,
     borderRadius: 16,
     padding: 24,
     width: "100%",
@@ -89,12 +96,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#111827",
+    color: Colors.textPrimary,
     marginBottom: 12,
   },
   description: {
     fontSize: 14,
-    color: "#4b5563",
+    color: Colors.textSecondary,
     lineHeight: 20,
     marginBottom: 8,
   },
@@ -104,29 +111,29 @@ const styles = StyleSheet.create({
   breakdown: {
     marginTop: 12,
     padding: 12,
-    backgroundColor: "#f9fafb",
+    backgroundColor: Colors.surfaceBg,
     borderRadius: 8,
   },
   breakdownTitle: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#374151",
+    color: Colors.textSecondary,
     marginBottom: 6,
   },
   breakdownItem: {
     fontSize: 13,
-    color: "#6b7280",
+    color: Colors.textMuted,
     marginTop: 2,
   },
   closeButton: {
     marginTop: 16,
-    backgroundColor: "#2563eb",
+    backgroundColor: Colors.primary,
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: "center",
   },
   closeText: {
-    color: "#fff",
+    color: Colors.cardBg,
     fontSize: 14,
     fontWeight: "600",
   },

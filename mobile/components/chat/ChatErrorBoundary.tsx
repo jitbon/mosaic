@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { Colors } from "../../constants/theme";
+
 interface Props {
   children: React.ReactNode;
 }
@@ -30,7 +32,8 @@ export default class ChatErrorBoundary extends Component<Props, State> {
         <View style={styles.container}>
           <Text style={styles.title}>Something went wrong</Text>
           <Text style={styles.message}>
-            {this.state.error?.message || "An unexpected error occurred in the chat."}
+            {this.state.error?.message ||
+              "An unexpected error occurred in the chat."}
           </Text>
           <Pressable
             style={styles.retryButton}
@@ -54,23 +57,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.cardBg,
   },
   title: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1F2937",
+    color: Colors.textSecondary,
     marginBottom: 8,
   },
   message: {
     fontSize: 14,
-    color: "#6B7280",
+    color: Colors.textMuted,
     textAlign: "center",
     lineHeight: 20,
     marginBottom: 20,
   },
   retryButton: {
-    backgroundColor: "#3B82F6",
+    backgroundColor: Colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 8,
@@ -78,6 +81,6 @@ const styles = StyleSheet.create({
   retryText: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: Colors.cardBg,
   },
 });

@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 import { Article } from "../../types/story";
+import { Colors } from "../../constants/theme";
 import ArticleLink from "./ArticleLink";
 
 interface SourceListProps {
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
   groupLabel: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#374151",
+    color: Colors.textSecondary,
     paddingHorizontal: 16,
     marginBottom: 6,
     textTransform: "uppercase",

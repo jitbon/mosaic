@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { Colors } from "../../constants/theme";
 
 interface Props {
   children: ReactNode;
@@ -55,29 +56,29 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
-    backgroundColor: "#f8fafc",
+    backgroundColor: Colors.surfaceBg,
   },
   title: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#111827",
+    color: Colors.textPrimary,
     marginBottom: 8,
   },
   message: {
     fontSize: 14,
-    color: "#6b7280",
+    color: Colors.textMuted,
     textAlign: "center",
     lineHeight: 20,
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#2563eb",
+    backgroundColor: Colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 8,
   },
   buttonText: {
-    color: "#fff",
+    color: Colors.cardBg,
     fontSize: 14,
     fontWeight: "600",
   },

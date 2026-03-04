@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { Colors } from "../../constants/theme";
 import type { Citation } from "../../types/chat";
 
 interface Props {
@@ -20,7 +21,9 @@ export default function ChatBubble({
 
   const renderContent = () => {
     if (!citations?.length || isUser) {
-      return <Text style={[styles.text, isUser && styles.userText]}>{content}</Text>;
+      return (
+        <Text style={[styles.text, isUser && styles.userText]}>{content}</Text>
+      );
     }
 
     // Parse [N] references and make them tappable
@@ -50,7 +53,10 @@ export default function ChatBubble({
 
   return (
     <View
-      style={[styles.container, isUser ? styles.userContainer : styles.assistantContainer]}
+      style={[
+        styles.container,
+        isUser ? styles.userContainer : styles.assistantContainer,
+      ]}
       accessibilityRole="text"
       accessibilityLabel={`${isUser ? "You" : "AI persona"}: ${content}`}
     >
@@ -75,29 +81,29 @@ const styles = StyleSheet.create({
   },
   userContainer: {
     alignSelf: "flex-end",
-    backgroundColor: "#3B82F6",
+    backgroundColor: Colors.primary,
     borderBottomRightRadius: 4,
   },
   assistantContainer: {
     alignSelf: "flex-start",
-    backgroundColor: "#F3F4F6",
+    backgroundColor: Colors.skeletonShine,
     borderBottomLeftRadius: 4,
   },
   text: {
     fontSize: 15,
     lineHeight: 22,
-    color: "#1F2937",
+    color: Colors.textSecondary,
   },
   userText: {
-    color: "#FFFFFF",
+    color: Colors.cardBg,
   },
   citationRef: {
-    color: "#2563EB",
+    color: Colors.primary,
     fontWeight: "600",
     textDecorationLine: "underline",
   },
   aiBadge: {
-    backgroundColor: "#E5E7EB",
+    backgroundColor: Colors.border,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -107,6 +113,6 @@ const styles = StyleSheet.create({
   aiBadgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#6B7280",
+    color: Colors.textMuted,
   },
 });

@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 
+import { Colors } from "../../constants/theme";
 import type { Citation } from "../../types/chat";
 import CitationCard from "./CitationCard";
 
@@ -29,10 +30,12 @@ export default function CitationSheet({ visible, citations, onClose }: Props) {
         <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
           <View style={styles.handle} />
           <View style={styles.header}>
-            <Text style={styles.title}>
-              Sources ({citations.length})
-            </Text>
-            <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel="Close sources">
+            <Text style={styles.title}>Sources ({citations.length})</Text>
+            <Pressable
+              onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel="Close sources"
+            >
               <Text style={styles.closeText}>Done</Text>
             </Pressable>
           </View>
@@ -57,7 +60,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   sheet: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.cardBg,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: "70%",
@@ -66,7 +69,7 @@ const styles = StyleSheet.create({
   handle: {
     width: 36,
     height: 4,
-    backgroundColor: "#D1D5DB",
+    backgroundColor: Colors.borderLight,
     borderRadius: 2,
     alignSelf: "center",
     marginTop: 8,
@@ -79,17 +82,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor: Colors.border,
   },
   title: {
     fontSize: 17,
     fontWeight: "700",
-    color: "#1F2937",
+    color: Colors.textSecondary,
   },
   closeText: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#2563EB",
+    color: Colors.primary,
   },
   scrollView: {
     flex: 1,

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
+import { Colors } from "../../constants/theme";
 
 interface LoadingSkeletonProps {
   count?: number;
@@ -21,7 +22,7 @@ function SkeletonCard() {
           duration: 800,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
     animation.start();
     return () => animation.stop();
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.cardBg,
     borderRadius: 12,
     marginHorizontal: 16,
     marginVertical: 6,
@@ -64,28 +65,28 @@ const styles = StyleSheet.create({
   imagePlaceholder: {
     width: "100%",
     height: 180,
-    backgroundColor: "#e5e7eb",
+    backgroundColor: Colors.skeletonBase,
   },
   content: {
     padding: 14,
   },
   titleLine: {
     height: 14,
-    backgroundColor: "#e5e7eb",
+    backgroundColor: Colors.skeletonBase,
     borderRadius: 4,
     marginBottom: 8,
     width: "90%",
   },
   subtitleLine: {
     height: 10,
-    backgroundColor: "#f3f4f6",
+    backgroundColor: Colors.skeletonShine,
     borderRadius: 4,
     marginBottom: 8,
     width: "70%",
   },
   barPlaceholder: {
     height: 6,
-    backgroundColor: "#f3f4f6",
+    backgroundColor: Colors.skeletonShine,
     borderRadius: 3,
     marginTop: 8,
   },

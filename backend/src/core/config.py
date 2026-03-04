@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     chat_abuse_redirect_limit: int = 3
     chat_history_retention_days: int = 30
 
+    # Debate settings
+    debate_context_token_limit: int = 4000
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
 

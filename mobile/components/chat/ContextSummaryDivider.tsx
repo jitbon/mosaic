@@ -1,9 +1,14 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { Colors } from "../../constants/theme";
+
 export default function ContextSummaryDivider() {
   return (
-    <View style={styles.container} accessibilityLabel="Earlier messages have been summarized">
+    <View
+      style={styles.container}
+      accessibilityLabel="Earlier messages have been summarized"
+    >
       <View style={styles.line} />
       <Text style={styles.text}>Earlier messages summarized</Text>
       <View style={styles.line} />
@@ -21,11 +26,11 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: Colors.border,
   },
   text: {
     fontSize: 11,
-    color: "#9CA3AF",
+    color: Colors.textFaint,
     marginHorizontal: 8,
   },
 });
