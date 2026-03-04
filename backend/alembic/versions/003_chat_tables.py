@@ -5,12 +5,13 @@ Revises: 002_feed_cache_materialized_view
 Create Date: 2026-03-04
 """
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
 
+from alembic import op
+
 revision = "003_chat_tables"
-down_revision = "002_feed_cache_materialized_view"
+down_revision = "002"
 branch_labels = None
 depends_on = None
 
@@ -52,9 +53,7 @@ def upgrade():
     )
 
     # Add vector column and index (pgvector)
-    op.execute(
-        "ALTER TABLE article_chunks ADD COLUMN embedding_vector vector(1536)"
-    )
+    op.execute("ALTER TABLE article_chunks ADD COLUMN embedding_vector vector(1536)")
     op.execute(
         "CREATE INDEX ix_article_chunks_embedding ON article_chunks "
         "USING ivfflat (embedding_vector vector_cosine_ops) WITH (lists = 100)"
@@ -81,7 +80,9 @@ def upgrade():
             sa.DateTime(timezone=True),
             server_default=sa.func.now(),
         ),
-        sa.Column("abuse_redirect_count", sa.Integer(), nullable=False, server_default="0"),
+        sa.Column(
+            "abuse_redirect_count", sa.Integer(), nullable=False, server_default="0"
+        ),
         sa.Column("is_ended", sa.Boolean(), nullable=False, server_default="false"),
         sa.Column("context_summary", sa.Text(), nullable=True),
     )
