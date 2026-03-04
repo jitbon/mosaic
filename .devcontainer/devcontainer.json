@@ -5,7 +5,8 @@
   "workspaceFolder": "/workspaces/mosaic",
 
   "features": {
-    "ghcr.io/devcontainers/features/git:1": {}
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/sshd:1": {}
   },
 
   "forwardPorts": [8000, 8081, 5432, 6379],
