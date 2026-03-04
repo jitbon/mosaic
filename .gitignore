@@ -1,1 +1,24 @@
 .claude/
+
+# Node
+node_modules/
+dist/
+build/
+*.log
+.env*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+
+# System
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
