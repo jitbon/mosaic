@@ -444,6 +444,93 @@ STORIES = [
             },
         ],
     },
+    # ── Story 8: Highly covered, balanced (4L, 4C, 4R) ───────────────────
+    {
+        "headline": "Trump's Push to Acquire Greenland Strains NATO Alliance and Sparks International Crisis",
+        "summary": "President Trump's renewed push to acquire Greenland from Denmark has escalated into a major diplomatic crisis, with the White House refusing to rule out military force and threatening 25% tariffs on EU goods. The issue has split Congress along unusual lines — Democrats are unified in opposition calling the push 'completely unhinged,' while Republicans are divided between those defending the strategic rationale and senior members like McConnell who warn it would 'incinerate' NATO alliances. Denmark has increased Arctic defense spending by billions, 85% of Greenlanders oppose joining the US, and the crisis eased only when Trump reversed course at Davos.",
+        "published_at": now - timedelta(hours=10),
+        "left_count": 4,
+        "center_count": 4,
+        "right_count": 4,
+        "is_blindspot": False,
+        "articles": [
+            # Left perspectives
+            {
+                "source": "The Guardian",
+                "title": "Trump's Greenland threats condemned as 'pure imperialism' by European leaders",
+                "slug": "trump-greenland-threats-imperialism-condemned",
+                "snippet": "Seven European leaders including French President Macron and German Chancellor Merz issued a joint statement saying Greenland 'belongs to its people,' warning that a US takeover would mark 'an act of imperial aggression not any different from what Russia is doing in Ukraine.' Analysts described the US effort as 'acting like a rogue state.' Sen. Brian Schatz (D-HI) said he doesn't 'see how you can be a serious person and not find this extremely worrisome,' adding that Trump 'is not stable at all and his reality is warped.'",
+            },
+            {
+                "source": "MSNBC",
+                "title": "Democrats unite against Greenland push: 'Completely unhinged'",
+                "slug": "democrats-unite-greenland-unhinged",
+                "snippet": "House Democratic Caucus Chair Pete Aguilar called the Greenland threats 'completely unhinged,' while Rep. Ted Lieu, a former Air Force lawyer, warned that any military member participating in an attack on Greenland would be 'following illegal orders.' Rep. Gabe Amo introduced legislation to block federal funds for the purchase, quickly gaining over 20 House Democratic co-sponsors. A bipartisan congressional delegation including Sen. Jeanne Shaheen and Reps. Gregory Meeks, Madeleine Dean, and Sara Jacobs traveled to Copenhagen to personally reassure Danish PM Frederiksen.",
+            },
+            {
+                "source": "HuffPost",
+                "title": "85% of Greenlanders oppose joining the US — but does Trump care?",
+                "slug": "greenlanders-oppose-joining-us-poll",
+                "snippet": "A January 2025 poll found 85% of Greenlanders oppose joining the United States, with only 6% in favor and 9% undecided. Greenlandic Prime Minister Múte Egede declared on Facebook: 'Let me repeat it — Greenland belongs to the Greenlanders.' The March 2025 parliamentary election saw the center-right Demokraatit party, which strongly criticized Trump, win decisively. What was believed to be 'America First' neo-isolationism turns out to mean imperialism, with the administration pursuing territorial expansion alongside the Venezuela intervention and Panama Canal threats.",
+            },
+            {
+                "source": "MSNBC",
+                "title": "GOP cracks widen as senior Republicans break with Trump on Greenland",
+                "slug": "gop-cracks-republicans-break-trump-greenland",
+                "snippet": "The Greenland crisis has exposed deep fissures within the Republican Party. Sen. Mitch McConnell delivered a searing rebuke, warning that military seizure would 'incinerate' long-standing NATO alliances and 'cripple efforts to contain Russian aggression.' Sen. Susan Collins said talk of taking over Greenland 'makes no sense whatsoever.' Rep. Don Bacon (R-NE) called Trump's actions 'appalling,' saying 'It's creating a lot of long-term anger and hurt with our friends in Europe.' Sens. Tillis and Murkowski traveled to Copenhagen to personally assure the Danish PM of Republican opposition to military force.",
+            },
+            # Center perspectives
+            {
+                "source": "Reuters",
+                "title": "Trump's Greenland push poses unprecedented challenge to 76-year NATO alliance",
+                "slug": "trump-greenland-push-nato-challenge",
+                "snippet": "Trump's threats against Greenland pose a new and potentially unprecedented challenge to NATO — perhaps even an existential one — for an alliance focused on external threats that could now face an armed confrontation involving its most powerful member. Denmark has committed over $4.7 billion to Arctic defense since January 2025. Danish PM Mette Frederiksen warned a US takeover would mark 'the end of NATO.'",
+            },
+            {
+                "source": "BBC News",
+                "title": "Greenland crisis splits US Congress along unusual lines",
+                "slug": "greenland-crisis-splits-congress",
+                "snippet": "The Greenland crisis has produced rare bipartisan opposition in Congress. House Speaker Mike Johnson (R-LA) said military action would not be 'appropriate,' and Senate Majority Leader John Thune (R-SD) said he does not see 'military action being an option.' Democrats are unified in opposition, with House caucus chair Pete Aguilar calling it 'completely unhinged.' However, the Senate Commerce Committee's Republican majority highlighted Greenland's strategic and economic value, with Sen. Moreno rejecting criticism that Trump's interest was a 'click-bait distraction.'",
+            },
+            {
+                "source": "Associated Press",
+                "title": "Trump reverses Greenland stance at Davos after bipartisan backlash",
+                "slug": "trump-reverses-greenland-stance-davos",
+                "snippet": "President Trump reversed his position at the 2026 Davos conference, pledging not to use force or tariffs to annex Greenland, after weeks of bipartisan congressional pushback. Trump announced a 'framework of a future deal' negotiated with NATO Secretary-General Mark Rutte, though details remain sparse. The reversal came as both Republican and Democratic lawmakers signaled they would block any military or coercive approach. In his first speech of 2025, King Frederik X had appeared to rebuke Trump, stating 'We are all united for the Kingdom of Denmark, from South Schleswig all the way to Greenland.'",
+            },
+            {
+                "source": "NPR",
+                "title": "What Greenlanders actually think about Trump's plans for their island",
+                "slug": "greenlanders-think-trump-plans",
+                "snippet": "While Washington debates the strategic merits of acquiring Greenland, the island's 56,000 residents have their own perspective. An overwhelming 85% oppose joining the US according to January 2025 polling. PM Múte Egede has repeatedly stated 'Greenland belongs to the Greenlanders.' Denmark responded by committing billions in new Arctic defense spending, and the March 2025 Greenlandic parliamentary election was widely seen as a rebuke to Trump's rhetoric, with anti-acquisition candidates winning decisively.",
+            },
+            # Right perspectives
+            {
+                "source": "Fox News",
+                "title": "Trump warns Russia and China won't take Greenland on his watch",
+                "slug": "trump-warns-russia-china-greenland",
+                "snippet": "President Trump framed the Greenland acquisition as essential for national security, stating 'Greenland is covered with Russian and Chinese ships all over the place.' White House press secretary Karoline Leavitt said 'President Trump has made it well known that acquiring Greenland is a national security priority' to 'deter Russian and Chinese aggression in the Arctic region.' Senate Commerce Committee Republicans highlighted the potential economic and security benefits at a hearing, with Sen. Moreno calling the discussion important and noting that Presidents Truman and Eisenhower had pursued similar interests.",
+            },
+            {
+                "source": "The Daily Wire",
+                "title": "The strategic case for Greenland: Why Arctic control matters for US defense",
+                "slug": "strategic-case-greenland-arctic-defense",
+                "snippet": "White House deputy chief of staff Stephen Miller argued 'For the United States to secure the Arctic region, to protect and defend NATO and NATO interests, obviously Greenland should be part of the United States.' Supporters point to Greenland's rare earth minerals — critical for technology and defense manufacturing — its strategic military position near Russian Arctic bases, and the growing Chinese presence in the region. Rep. Joe Wilson (R-SC) said the push is a negotiating tactic to boost US Arctic military presence: 'This is a way to really alert people to the threat that's coming from the Arctic.'",
+            },
+            {
+                "source": "New York Post",
+                "title": "Greenland takeover could cost $700 billion — but backers say it's worth every penny",
+                "slug": "greenland-takeover-700-billion-cost",
+                "snippet": "Trump's Greenland acquisition plan carries an estimated price tag of $700 billion according to analysts, but administration officials argue the island's vast mineral wealth, including rare earth elements critical for technology and defense, combined with its strategic Arctic position, could make it the 'real estate deal of the century.' The Trump administration reportedly considered paying each Greenland resident between $10,000 and $100,000 as part of a takeover deal.",
+            },
+            {
+                "source": "Fox News",
+                "title": "House GOP moves to put Greenland on path to statehood as Trump escalates push",
+                "slug": "house-gop-greenland-statehood",
+                "snippet": "As Trump escalated his push for Greenland, Republican House members introduced legislation to put the island on a path to becoming America's 51st state. While GOP leadership in the Senate — including Majority Leader Thune and Appropriations Chair Collins — pushed back on military options, the House bill reflects the divide within the party between those who see the acquisition as visionary and those who view the military rhetoric as counterproductive to the broader diplomatic goal.",
+            },
+        ],
+    },
 ]
 
 # ---------------------------------------------------------------------------
