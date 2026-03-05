@@ -36,7 +36,7 @@ export function useDebate(storyId: number) {
     setState((s) => ({ ...s, error: null }));
     try {
       const debate = await startDebate(storyId, { personas });
-      setState((s) => ({ ...s, debate }));
+      setState((s) => ({ ...s, debate: { ...debate, turns: debate.turns ?? [] } }));
     } catch (err) {
       setState((s) => ({ ...s, error: err instanceof Error ? err.message : String(err) }));
     }
@@ -127,7 +127,7 @@ export function useDebate(storyId: number) {
     if (!state.debate) return;
     try {
       const updated = await updateDebateStatus(state.debate.id, status);
-      setState((s) => ({ ...s, debate: updated }));
+      setState((s) => ({ ...s, debate: { ...updated, turns: updated.turns ?? s.debate?.turns ?? [] } }));
     } catch (err) {
       setState((s) => ({ ...s, error: err instanceof Error ? err.message : String(err) }));
     }
