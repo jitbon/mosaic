@@ -3,14 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useDebate } from "@/hooks/useDebate";
-import { getPerspectives } from "@/lib/api";
+import { useReactions } from "@/hooks/useReactions";
+import { getDebate, getDebates, getPerspectives } from "@/lib/api";
 import DebatePersonaSelector from "@/components/debate/DebatePersonaSelector";
 import DebateTurn from "@/components/debate/DebateTurn";
 import ModeratorInput from "@/components/debate/ModeratorInput";
 import StreamingText from "@/components/chat/StreamingText";
+import TypingIndicator from "@/components/common/TypingIndicator";
 import ErrorBanner from "@/components/common/ErrorBanner";
 import type { Perspective, PerspectiveAvailabilityResponse } from "@/types/chat";
-import type { DebateRole, DebateTurnData } from "@/types/debate";
+import type { DebateRole, DebateSummary, DebateTurnData } from "@/types/debate";
 
 const ROLE_LABELS: Record<DebateRole, string> = { persona_left: "Left", persona_center: "Center", persona_right: "Right", moderator: "Moderator" };
 const ROLE_COLORS: Record<DebateRole, string> = { persona_left: "var(--color-left)", persona_center: "var(--color-center)", persona_right: "var(--color-right)", moderator: "var(--color-text-muted)" };
@@ -20,13 +22,48 @@ export default function DebateClient({ storyId }: { storyId: string }) {
   const [perspectives, setPerspectives] = useState<PerspectiveAvailabilityResponse | null>(null);
   const [selectedPersonas, setSelectedPersonas] = useState<Perspective[]>(["left", "right"]);
   const [starting, setStarting] = useState(false);
-  const { debate, streaming, streamingText, streamingRole, roundComplete, error, start, runRound, interject, setStatus } = useDebate(id);
+  const [pastDebates, setPastDebates] = useState<DebateSummary[]>([]);
+  const { debate, streaming, streamingText, streamingRole, roundComplete, error, start, runRound, interject, setStatus, loadDebate, reset } = useDebate(id);
+  const { reactions, loadReactions, toggleReaction } = useReactions(debate?.id ?? null, "debate");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { getPerspectives(id).then(setPerspectives).catch(() => null); }, [id]);
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [debate?.turns, streamingText]);
 
-  async function handleStart() { setStarting(true); await start(selectedPersonas); setStarting(false); }
+  // Load past debates list
+  useEffect(() => {
+    getDebates(id).then(setPastDebates).catch(() => null);
+  }, [id, debate?.id]);
+
+  // Load reactions when debate is available
+  useEffect(() => {
+    if (debate?.id) {
+      loadReactions();
+    }
+  }, [debate?.id, loadReactions]);
+
+  // Reload reactions after a round finishes streaming
+  useEffect(() => {
+    if (!streaming && debate?.id) {
+      loadReactions();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [streaming]);
+
+  async function handleStart() {
+    setStarting(true);
+    await start(selectedPersonas);
+    setStarting(false);
+  }
+
+  async function handleLoadDebate(debateId: number) {
+    try {
+      const detail = await getDebate(debateId);
+      loadDebate(detail);
+    } catch {
+      // ignore
+    }
+  }
 
   const isActive = debate?.status === "active";
   const isCompleted = debate?.status === "completed";
@@ -36,13 +73,56 @@ export default function DebateClient({ storyId }: { storyId: string }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <div style={{ padding: "12px 16px", backgroundColor: "var(--color-surface-bg)", borderBottom: "1px solid var(--color-border)", flexShrink: 0 }}>
+      <div style={{ padding: "12px 16px", backgroundColor: "var(--color-surface-bg)", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
         <Link href={`/story/${storyId}`} style={{ textDecoration: "none", color: "var(--color-primary)", fontSize: 14 }}>← Story</Link>
+        <span style={{ flex: 1 }} />
+        {debate && (
+          <button
+            onClick={reset}
+            style={{ fontSize: 12, color: "var(--color-primary)", background: "none", border: "1px solid var(--color-primary)", borderRadius: 6, padding: "4px 8px", cursor: "pointer" }}
+          >
+            New Debate
+          </button>
+        )}
       </div>
       {error && <ErrorBanner message={error} />}
       {!debate ? (
         <div style={{ flex: 1, overflowY: "auto" }}>
           <DebatePersonaSelector perspectives={perspectives} selected={selectedPersonas} onChange={setSelectedPersonas} onStart={handleStart} starting={starting} />
+
+          {/* Past debates */}
+          {pastDebates.length > 0 && (
+            <div style={{ padding: "0 16px 16px" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--color-text-secondary)", marginBottom: 8 }}>Past Debates</div>
+              {pastDebates.map((d) => (
+                <button
+                  key={d.id}
+                  onClick={() => handleLoadDebate(d.id)}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "10px 12px",
+                    marginBottom: 8,
+                    borderRadius: 10,
+                    border: "1px solid var(--color-border)",
+                    backgroundColor: "var(--color-card-bg)",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: 4 }}>
+                    {d.personas.join(" vs ")} · {d.turn_count} turns · Round {d.current_round}
+                    <span style={{ color: d.status === "active" ? "var(--color-success)" : "var(--color-text-muted)", fontWeight: 400 }}> ({d.status})</span>
+                  </div>
+                  {d.last_turn_preview && (
+                    <div style={{ fontSize: 12, color: "var(--color-text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {d.last_turn_preview}
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <>
@@ -55,9 +135,19 @@ export default function DebateClient({ storyId }: { storyId: string }) {
             {Object.entries(turnsByRound).map(([round, turns]) => (
               <div key={round}>
                 <div style={{ textAlign: "center", fontSize: 11, color: "var(--color-text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", padding: "8px 0" }}>— Round {round} —</div>
-                {turns.map((t) => <DebateTurn key={t.id} turn={t} />)}
+                {turns.map((t) => (
+                  <DebateTurn
+                    key={t.id}
+                    turn={t}
+                    reactions={reactions[String(t.id)] ?? []}
+                    onReactionToggle={toggleReaction}
+                  />
+                ))}
               </div>
             ))}
+            {streaming && !streamingText && (
+              <TypingIndicator label={streamingRole ? ROLE_LABELS[streamingRole as DebateRole] : undefined} />
+            )}
             {streaming && streamingText && (
               <div style={{ margin: "8px 12px" }}>
                 {streamingRole && <div style={{ fontSize: 12, fontWeight: 700, color: ROLE_COLORS[streamingRole as DebateRole], marginBottom: 4 }}>{ROLE_LABELS[streamingRole as DebateRole]}</div>}

@@ -61,3 +61,28 @@ export interface Conversation {
   updated_at: string;
   messages: Message[];
 }
+
+export type EmojiValue = "thumbs_up" | "thumbs_down" | "question" | "lightbulb" | "heart";
+
+export interface EmojiOption {
+  value: EmojiValue;
+  display: string;
+  label: string;
+}
+
+export const EMOJI_OPTIONS: EmojiOption[] = [
+  { value: "thumbs_up", display: "👍", label: "Agree" },
+  { value: "thumbs_down", display: "👎", label: "Disagree" },
+  { value: "question", display: "❓", label: "Confused" },
+  { value: "lightbulb", display: "💡", label: "Insightful" },
+  { value: "heart", display: "❤️", label: "Appreciate" },
+];
+
+export interface Reaction {
+  id: number;
+  emoji: EmojiValue;
+  created_at: string;
+}
+
+// Map of message_id (or debate_turn_id) string → reactions
+export type ReactionsMap = Record<string, Reaction[]>;

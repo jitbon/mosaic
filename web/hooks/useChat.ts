@@ -16,18 +16,19 @@ interface ChatState {
   error: string | null;
 }
 
-export function useChat(storyId: number) {
-  const [state, setState] = useState<ChatState>({
-    messages: [],
-    streaming: false,
-    streamingText: "",
-    streamingCitations: [],
-    conversationId: null,
-    ended: false,
-    endedReason: null,
-    error: null,
-  });
+const INITIAL_STATE: ChatState = {
+  messages: [],
+  streaming: false,
+  streamingText: "",
+  streamingCitations: [],
+  conversationId: null,
+  ended: false,
+  endedReason: null,
+  error: null,
+};
 
+export function useChat(storyId: number) {
+  const [state, setState] = useState<ChatState>(INITIAL_STATE);
   const abortRef = useRef<AbortController | null>(null);
 
   const sendMessage = useCallback(
@@ -100,8 +101,13 @@ export function useChat(storyId: number) {
   );
 
   const loadConversation = useCallback((messages: Message[], id: number) => {
-    setState((s) => ({ ...s, messages, conversationId: id }));
+    setState({ ...INITIAL_STATE, messages, conversationId: id });
   }, []);
 
-  return { ...state, sendMessage, loadConversation };
+  const reset = useCallback(() => {
+    abortRef.current?.abort();
+    setState(INITIAL_STATE);
+  }, []);
+
+  return { ...state, sendMessage, loadConversation, reset };
 }

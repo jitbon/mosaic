@@ -13,9 +13,13 @@ from src.core.config import settings
 from src.models.conversation import Conversation
 from src.models.message import Message
 from src.models.story import Story
-from src.services.chat.context_manager import get_conversation_context, summarize_if_needed
-from src.services.chat.persona_service import build_system_prompt, build_intro_message
-from src.services.chat.rag_service import retrieve_chunks, format_rag_context
+from src.services.chat.context_manager import (
+    get_conversation_context,
+    summarize_if_needed,
+)
+from src.services.chat.persona_service import build_system_prompt
+from src.services.chat.rag_service import format_rag_context, retrieve_chunks
+from src.services.chat.reaction_context import build_reaction_context
 
 logger = logging.getLogger(__name__)
 
@@ -61,14 +65,16 @@ def _extract_citations(response_text: str, chunks: list[dict]) -> list[dict]:
         if 1 <= ref_idx <= len(chunks):
             chunk = chunks[ref_idx - 1]
             meta = chunk.get("metadata", {})
-            citations.append({
-                "index": ref_idx,
-                "source_name": meta.get("source_name", "Unknown"),
-                "article_title": meta.get("article_title", "Untitled"),
-                "article_url": meta.get("article_url", ""),
-                "bias_label": chunk.get("bias_label", ""),
-                "quoted_text": chunk.get("content", "")[:200],
-            })
+            citations.append(
+                {
+                    "index": ref_idx,
+                    "source_name": meta.get("source_name", "Unknown"),
+                    "article_title": meta.get("article_title", "Untitled"),
+                    "article_url": meta.get("article_url", ""),
+                    "bias_label": chunk.get("bias_label", ""),
+                    "quoted_text": chunk.get("content", "")[:200],
+                }
+            )
 
     return citations
 
@@ -78,15 +84,33 @@ def _get_or_create_conversation(
 ) -> tuple[Optional[Conversation], bool, Optional[str]]:
     """Resolve or create a conversation. Returns (conversation, is_new, error_sse)."""
     if conversation_id:
-        conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+        conversation = (
+            db.query(Conversation).filter(Conversation.id == conversation_id).first()
+        )
         if not conversation:
-            return None, False, _format_sse({"type": "error", "code": "not_found", "message": "Conversation not found"})
+            return (
+                None,
+                False,
+                _format_sse(
+                    {
+                        "type": "error",
+                        "code": "not_found",
+                        "message": "Conversation not found",
+                    }
+                ),
+            )
         if conversation.is_ended:
-            return None, False, _format_sse({
-                "type": "ended",
-                "reason": "abuse_threshold",
-                "message": "This conversation was ended due to repeated policy violations. You can start a new conversation.",
-            })
+            return (
+                None,
+                False,
+                _format_sse(
+                    {
+                        "type": "ended",
+                        "reason": "abuse_threshold",
+                        "message": "This conversation was ended due to repeated policy violations. You can start a new conversation.",
+                    }
+                ),
+            )
         return conversation, False, None
 
     conversation = (
@@ -94,7 +118,7 @@ def _get_or_create_conversation(
         .filter(
             Conversation.story_id == story_id,
             Conversation.perspective == perspective,
-            Conversation.is_ended == False,
+            Conversation.is_ended.is_(False),
         )
         .first()
     )
@@ -123,11 +147,13 @@ def _handle_abuse_check(
             )
             db.add(assistant_msg)
             db.commit()
-            return _format_sse({
-                "type": "ended",
-                "reason": "abuse_threshold",
-                "message": "This conversation has been ended due to repeated policy violations.",
-            })
+            return _format_sse(
+                {
+                    "type": "ended",
+                    "reason": "abuse_threshold",
+                    "message": "This conversation has been ended due to repeated policy violations.",
+                }
+            )
         db.commit()
     elif conversation.abuse_redirect_count:
         conversation.abuse_redirect_count = 0
@@ -147,7 +173,9 @@ async def stream_chat_response(
     # 1. Validate story
     story = db.query(Story).filter(Story.id == story_id).first()
     if not story:
-        yield _format_sse({"type": "error", "code": "not_found", "message": "Story not found"})
+        yield _format_sse(
+            {"type": "error", "code": "not_found", "message": "Story not found"}
+        )
         return
 
     # 2. Get or create conversation
@@ -159,10 +187,14 @@ async def stream_chat_response(
         return
 
     if is_new:
-        yield _format_sse({"type": "conversation_start", "conversation_id": conversation.id})
+        yield _format_sse(
+            {"type": "conversation_start", "conversation_id": conversation.id}
+        )
 
     # 3. Save user message
-    user_msg = Message(conversation_id=conversation.id, role="user", content=user_message)
+    user_msg = Message(
+        conversation_id=conversation.id, role="user", content=user_message
+    )
     db.add(user_msg)
     db.commit()
 
@@ -184,13 +216,32 @@ async def stream_chat_response(
     )
     messages = get_conversation_context(db, conversation)
 
+    # 5b. Inject reaction context if any reactions exist
+    reaction_block = build_reaction_context(db, conversation.id)
+    if reaction_block and messages:
+        # Prepend reaction feedback to the last user message
+        last_user_idx = next(
+            (
+                i
+                for i in range(len(messages) - 1, -1, -1)
+                if messages[i]["role"] == "user"
+            ),
+            None,
+        )
+        if last_user_idx is not None:
+            messages = list(messages)
+            messages[last_user_idx] = {
+                **messages[last_user_idx],
+                "content": reaction_block + "\n\n" + messages[last_user_idx]["content"],
+            }
+
     # 6. Stream from Claude
     client = _get_client()
     full_response = ""
 
     try:
         async with client.messages.stream(
-            model="claude-sonnet-4-20250514",
+            model="claude-haiku-4-5-20251001",
             max_tokens=1024,
             system=system_prompt,
             messages=messages,

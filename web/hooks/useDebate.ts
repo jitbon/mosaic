@@ -21,6 +21,9 @@ interface DebateState {
   error: string | null;
 }
 
+/** Yield control to the browser so React can paint. */
+const tick = () => new Promise<void>((r) => setTimeout(r, 0));
+
 export function useDebate(storyId: number) {
   const [state, setState] = useState<DebateState>({
     debate: null,
@@ -51,11 +54,19 @@ export function useDebate(storyId: number) {
     let currentRole: string | null = null;
     let currentText = "";
 
-    await streamSSE<DebateSSEEvent>({
-      url: debateRoundUrl(state.debate.id),
-      body: {},
-      signal: abortRef.current.signal,
-      onEvent(ev) {
+    // Queue + processor: SSE events arrive synchronously in onEvent, but we
+    // need async pauses (between turns) so React can paint the completed turn
+    // before the next one starts streaming.
+    const queue: DebateSSEEvent[] = [];
+    let processing = false;
+
+    async function processQueue() {
+      if (processing) return;
+      processing = true;
+
+      while (queue.length > 0) {
+        const ev = queue.shift()!;
+
         if (ev.type === "turn_start") {
           currentRole = ev.role;
           currentText = "";
@@ -79,8 +90,9 @@ export function useDebate(storyId: number) {
             ...s,
             debate: s.debate ? { ...s.debate, turns: [...s.debate.turns, turn] } : s.debate,
             streamingText: "",
-            streamingRole: null,
           }));
+          // Let React paint the completed turn before processing the next turn_start
+          await tick();
         } else if (ev.type === "round_complete") {
           setState((s) => ({
             ...s,
@@ -93,6 +105,18 @@ export function useDebate(storyId: number) {
         } else if (ev.type === "error") {
           setState((s) => ({ ...s, streaming: false, error: ev.message }));
         }
+      }
+
+      processing = false;
+    }
+
+    await streamSSE<DebateSSEEvent>({
+      url: debateRoundUrl(state.debate.id),
+      body: {},
+      signal: abortRef.current.signal,
+      onEvent(ev) {
+        queue.push(ev);
+        processQueue();
       },
       onError(err) {
         setState((s) => ({ ...s, streaming: false, error: err.message }));
@@ -133,5 +157,28 @@ export function useDebate(storyId: number) {
     }
   }, [state.debate]);
 
-  return { ...state, start, runRound, interject, setStatus };
+  const loadDebate = useCallback((detail: DebateDetail) => {
+    setState({
+      debate: { ...detail, turns: detail.turns ?? [] },
+      streamingRole: null,
+      streamingText: "",
+      streaming: false,
+      roundComplete: detail.turns?.length > 0,
+      error: null,
+    });
+  }, []);
+
+  const reset = useCallback(() => {
+    abortRef.current?.abort();
+    setState({
+      debate: null,
+      streamingRole: null,
+      streamingText: "",
+      streaming: false,
+      roundComplete: false,
+      error: null,
+    });
+  }, []);
+
+  return { ...state, start, runRound, interject, setStatus, loadDebate, reset };
 }

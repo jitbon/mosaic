@@ -41,7 +41,7 @@ export default function DebatePersonaSelector({
         Choose Perspectives to Debate
       </h2>
       <p style={{ fontSize: 13, color: "var(--color-text-muted)", margin: "0 0 16px" }}>
-        Select 2–3 perspectives
+        Select 2–3 perspectives · first selected speaks first
       </p>
 
       <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
@@ -73,7 +73,11 @@ export default function DebatePersonaSelector({
                 {p === "left" ? "🔵" : p === "center" ? "🟣" : "🔴"}
               </div>
               {LABELS[p]}
-              {isSelected && <div style={{ fontSize: 18, marginTop: 4 }}>✓</div>}
+              {isSelected && (
+                <div style={{ fontSize: 11, marginTop: 4, fontWeight: 700, opacity: 0.7 }}>
+                  {selected.indexOf(p) === 0 ? "1st" : selected.indexOf(p) === 1 ? "2nd" : "3rd"}
+                </div>
+              )}
             </button>
           );
         })}
