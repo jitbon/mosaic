@@ -48,10 +48,11 @@ export function getPerspectives(storyId: number) {
 }
 
 // Conversations
-export function getConversations(storyId: number) {
-  return apiFetch<ConversationSummary[]>(
+export async function getConversations(storyId: number) {
+  const res = await apiFetch<{ conversations: ConversationSummary[] }>(
     `/api/v1/chat/${storyId}/conversations`
   );
+  return res.conversations;
 }
 
 export function getConversation(conversationId: number) {
@@ -72,8 +73,11 @@ export function startDebate(storyId: number, body: DebateCreate) {
   });
 }
 
-export function getDebates(storyId: number) {
-  return apiFetch<DebateSummary[]>(`/api/v1/debate/${storyId}/debates`);
+export async function getDebates(storyId: number) {
+  const res = await apiFetch<{ debates: DebateSummary[] }>(
+    `/api/v1/debate/${storyId}/debates`
+  );
+  return res.debates;
 }
 
 export function getDebate(debateId: number) {

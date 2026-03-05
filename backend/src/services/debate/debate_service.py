@@ -253,7 +253,7 @@ async def _summarize_debate_if_needed(db: Session, debate: Debate) -> None:
     try:
         client = _get_client()
         response = await client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-haiku-4-5-20251001",
             max_tokens=400,
             messages=[
                 {
@@ -331,13 +331,11 @@ async def stream_debate_round(db: Session, debate: Debate) -> AsyncGenerator[str
         # Add a user message to prompt this persona's turn
         if messages:
             # Claude requires alternating user/assistant. Add a user prompt.
-            messages.append(
-                {
-                    "role": "user",
-                    "content": f"Now it's your turn as the {PERSPECTIVE_LABELS.get(perspective, perspective)} persona. "
-                    "Respond to the previous arguments and present your perspective.",
-                }
+            turn_prompt = (
+                f"Now it's your turn as the {PERSPECTIVE_LABELS.get(perspective, perspective)} persona. "
+                "Respond to the previous arguments and present your perspective."
             )
+            messages.append({"role": "user", "content": turn_prompt})
         else:
             messages.append(
                 {
@@ -353,7 +351,7 @@ async def stream_debate_round(db: Session, debate: Debate) -> AsyncGenerator[str
 
         try:
             async with client.messages.stream(
-                model="claude-sonnet-4-20250514",
+                model="claude-haiku-4-5-20251001",
                 max_tokens=1024,
                 system=system_prompt,
                 messages=messages,

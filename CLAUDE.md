@@ -9,6 +9,8 @@ Auto-generated from all feature plans. Last updated: 2026-03-04
 - PostgreSQL + pgvector (backend debate records), expo-sqlite (mobile local debate history) (003-debate-mode)
 - TypeScript 5.x, Node.js 22 LTS + Next.js 15 (App Router, static export), React 19, `@microsoft/fetch-event-source` (POST-based SSE), Tailwind CSS 4 (004-web-frontend)
 - N/A (all data from backend API; no browser-local storage) (004-web-frontend)
+- Python 3.11 (backend), TypeScript 5.x (web frontend) + FastAPI, SQLAlchemy, Anthropic Claude SDK (backend); Next.js 15, React 19 (frontend) (005-emoji-reactions)
+- PostgreSQL (new `reactions` table); no browser-local storage needed (005-emoji-reactions)
 
 - (001-biased-news-feed)
 
@@ -28,9 +30,9 @@ tests/
 : Follow standard conventions
 
 ## Recent Changes
+- 005-emoji-reactions: Added Python 3.11 (backend), TypeScript 5.x (web frontend) + FastAPI, SQLAlchemy, Anthropic Claude SDK (backend); Next.js 15, React 19 (frontend)
 - 004-web-frontend: Added TypeScript 5.x, Node.js 22 LTS + Next.js 15 (App Router, static export), React 19, `@microsoft/fetch-event-source` (POST-based SSE), Tailwind CSS 4
 - 003-debate-mode: Added Python 3.11 (backend), TypeScript 5.x (mobile) + FastAPI, Anthropic Claude SDK, SQLAlchemy, React Native + Expo, expo-sqlite (all existing from feature 002)
-- 002-ai-persona-chat: Added Python 3.11 (backend), TypeScript 5.x (mobile) + FastAPI, Anthropic Claude SDK, SQLAlchemy, React Native + Expo, expo-sqlite
 
 
 <!-- MANUAL ADDITIONS START -->

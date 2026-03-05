@@ -30,20 +30,21 @@ export default function ChatBubble({ message, perspective }: ChatBubbleProps) {
         padding: "0 12px",
       }}
     >
-      <div
-        style={{
-          maxWidth: "80%",
-          padding: "10px 14px",
-          borderRadius: isUser ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-          backgroundColor: isUser ? accentColor : "var(--color-card-bg)",
-          color: isUser ? "white" : "var(--color-text-primary)",
-          border: isUser ? "none" : `1px solid var(--color-border)`,
-          borderLeft: !isUser ? `3px solid ${accentColor}` : undefined,
-          fontSize: 14,
-          lineHeight: 1.6,
-        }}
-      >
-        {message.content}
+      <div style={{ maxWidth: "80%" }}>
+        <div
+          style={{
+            padding: "10px 14px",
+            borderRadius: isUser ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+            backgroundColor: isUser ? accentColor : "var(--color-card-bg)",
+            color: isUser ? "white" : "var(--color-text-primary)",
+            border: isUser ? "none" : `1px solid var(--color-border)`,
+            borderLeft: !isUser ? `3px solid ${accentColor}` : undefined,
+            fontSize: 14,
+            lineHeight: 1.6,
+          }}
+        >
+          {message.content}
+        </div>
       </div>
 
       {!isUser && message.citations && message.citations.length > 0 && (

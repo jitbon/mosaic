@@ -1,30 +1,17 @@
 import logging
-from typing import Optional
 
-import tiktoken
-from openai import OpenAI
 from sqlalchemy.orm import Session
 
-from src.core.config import settings
 from src.models.article import Article
 from src.models.article_chunk import ArticleChunk
 from src.models.source import Source
 
 logger = logging.getLogger(__name__)
 
-_openai_client: Optional[OpenAI] = None
-_encoder = tiktoken.get_encoding("cl100k_base")
-
-
-def _get_openai_client() -> OpenAI:
-    global _openai_client
-    if _openai_client is None:
-        _openai_client = OpenAI(api_key=settings.openai_api_key)
-    return _openai_client
-
 
 def count_tokens(text: str) -> int:
-    return len(_encoder.encode(text))
+    """Approximate token count using whitespace splitting (~75% accuracy)."""
+    return len(text.split())
 
 
 def chunk_article_text(
@@ -77,20 +64,7 @@ def chunk_article_text(
     return chunks
 
 
-def embed_texts(texts: list[str]) -> list[list[float]]:
-    """Embed a batch of texts using OpenAI text-embedding-3-small."""
-    if not texts:
-        return []
-
-    client = _get_openai_client()
-    response = client.embeddings.create(
-        model="text-embedding-3-small",
-        input=texts,
-    )
-    return [item.embedding for item in response.data]
-
-
-def chunk_and_embed_article(db: Session, article: Article) -> list[ArticleChunk]:
+def chunk_and_store_article(db: Session, article: Article) -> list[ArticleChunk]:
     """Chunk an article, embed chunks, and store in DB."""
     source = db.query(Source).filter(Source.id == article.source_id).first()
     if not source:
@@ -101,31 +75,22 @@ def chunk_and_embed_article(db: Session, article: Article) -> list[ArticleChunk]
     if not text:
         return []
 
-    # Prepend title + source for context in each chunk
-    prefix = f"{article.title}. {source.name}."
-
     raw_chunks = chunk_article_text(text)
     if not raw_chunks:
         return []
 
-    # Prepend context to each chunk for embedding
-    texts_to_embed = [f"{prefix} {chunk}" for chunk in raw_chunks]
-
-    try:
-        embeddings = embed_texts(texts_to_embed)
-    except Exception as e:
-        logger.error(f"Failed to embed article {article.id}: {e}")
-        return []
+    # TODO: Add vector embeddings (e.g. Voyage AI) when article volume
+    # justifies semantic search. Current scale works fine with recency-based
+    # retrieval — see rag_service._fallback_retrieve().
 
     created_chunks = []
-    for i, (chunk_text, embedding) in enumerate(zip(raw_chunks, embeddings)):
+    for i, chunk_text in enumerate(raw_chunks):
         chunk = ArticleChunk(
             article_id=article.id,
             story_id=article.story_id,
             bias_label=source.bias_rating,
             chunk_index=i,
             content=chunk_text,
-            embedding=str(embedding),
             metadata_={
                 "source_name": source.name,
                 "article_title": article.title,
@@ -147,13 +112,8 @@ def chunk_and_embed_article(db: Session, article: Article) -> list[ArticleChunk]
 
 
 def chunk_story_articles(db: Session, story_id: int) -> int:
-    """Chunk and embed all articles for a story. Returns chunk count."""
-    # Check if chunks already exist
-    existing = (
-        db.query(ArticleChunk)
-        .filter(ArticleChunk.story_id == story_id)
-        .count()
-    )
+    """Chunk all articles for a story. Returns chunk count."""
+    existing = db.query(ArticleChunk).filter(ArticleChunk.story_id == story_id).count()
     if existing > 0:
         logger.info(f"Story {story_id} already has {existing} chunks, skipping")
         return existing
@@ -161,7 +121,7 @@ def chunk_story_articles(db: Session, story_id: int) -> int:
     articles = db.query(Article).filter(Article.story_id == story_id).all()
     total_chunks = 0
     for article in articles:
-        chunks = chunk_and_embed_article(db, article)
+        chunks = chunk_and_store_article(db, article)
         total_chunks += len(chunks)
 
     return total_chunks

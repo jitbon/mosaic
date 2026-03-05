@@ -48,6 +48,7 @@ export default function DebateTurn({ turn }: DebateTurnProps) {
       <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--color-text-primary)", margin: 0 }}>
         {turn.content}
       </p>
+
       {turn.citations && turn.citations.length > 0 && (
         <div style={{ marginTop: 8 }}>
           <button

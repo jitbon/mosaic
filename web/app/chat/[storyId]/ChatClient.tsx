@@ -1,65 +1,94 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useChat } from "@/hooks/useChat";
 import { getPerspectives } from "@/lib/api";
-import PerspectiveSelector from "@/components/chat/PerspectiveSelector";
-import ChatBubble from "@/components/chat/ChatBubble";
-import ChatInput from "@/components/chat/ChatInput";
-import StreamingText from "@/components/chat/StreamingText";
-import ErrorBanner from "@/components/common/ErrorBanner";
+import ChatPane from "@/components/chat/ChatPane";
 import type { Perspective, PerspectiveAvailabilityResponse } from "@/types/chat";
+
+const ALL_PERSPECTIVES: Perspective[] = ["left", "center", "right"];
+const LABELS: Record<Perspective, string> = { left: "Left", center: "Center", right: "Right" };
+const COLORS: Record<Perspective, string> = {
+  left: "var(--color-left)",
+  center: "var(--color-center)",
+  right: "var(--color-right)",
+};
 
 export default function ChatClient({ storyId }: { storyId: string }) {
   const id = Number(storyId);
-  const [perspective, setPerspective] = useState<Perspective>("left");
   const [perspectives, setPerspectives] = useState<PerspectiveAvailabilityResponse | null>(null);
-  const { messages, streaming, streamingText, conversationId, ended, endedReason, error, sendMessage } = useChat(id);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const [openPanes, setOpenPanes] = useState<Perspective[]>(["left"]);
 
   useEffect(() => {
     getPerspectives(id).then(setPerspectives).catch(() => null);
   }, [id]);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, streamingText]);
+  function togglePane(p: Perspective) {
+    setOpenPanes((prev) =>
+      prev.includes(p) ? (prev.length > 1 ? prev.filter((x) => x !== p) : prev) : [...prev, p]
+    );
+  }
+
+  function closePane(p: Perspective) {
+    setOpenPanes((prev) => prev.length > 1 ? prev.filter((x) => x !== p) : prev);
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <div style={{ padding: "12px 16px", backgroundColor: "var(--color-surface-bg)", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+      {/* Top bar */}
+      <div style={{ padding: "10px 16px", backgroundColor: "var(--color-surface-bg)", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
         <Link href={`/story/${storyId}`} style={{ textDecoration: "none", color: "var(--color-primary)", fontSize: 14 }}>← Story</Link>
-        {conversationId && <span style={{ fontSize: 12, color: "var(--color-text-muted)" }}>#{conversationId}</span>}
+        <span style={{ flex: 1 }} />
+        {/* Perspective toggle chips */}
+        {ALL_PERSPECTIVES.map((p) => {
+          const info = perspectives?.perspectives[p];
+          const available = info?.available ?? true;
+          const isOpen = openPanes.includes(p);
+          const color = COLORS[p];
+
+          return (
+            <button
+              key={p}
+              onClick={() => available && togglePane(p)}
+              disabled={!available}
+              style={{
+                padding: "4px 12px",
+                borderRadius: 16,
+                border: isOpen ? `2px solid ${color}` : "1px solid var(--color-border)",
+                backgroundColor: isOpen ? `${color}18` : "transparent",
+                color: isOpen ? color : available ? "var(--color-text-secondary)" : "var(--color-text-disabled)",
+                fontWeight: isOpen ? 700 : 400,
+                fontSize: 12,
+                cursor: available ? "pointer" : "not-allowed",
+                transition: "all 0.15s",
+              }}
+            >
+              {LABELS[p]}
+            </button>
+          );
+        })}
       </div>
 
-      <PerspectiveSelector perspectives={perspectives} selected={perspective} onChange={setPerspective} />
-      {error && <ErrorBanner message={error} />}
-
-      <div style={{ flex: 1, overflowY: "auto", padding: "12px 0" }}>
-        {messages.length === 0 && !streaming && (
-          <p style={{ textAlign: "center", color: "var(--color-text-muted)", marginTop: 40, fontSize: 14 }}>
-            Ask the {perspective} perspective about this story
-          </p>
-        )}
-        {messages.map((m) => <ChatBubble key={m.id} message={m} perspective={perspective} />)}
-        {streaming && streamingText && (
-          <div style={{ padding: "0 12px", marginBottom: 12 }}>
-            <div style={{ maxWidth: "80%", padding: "10px 14px", borderRadius: "18px 18px 18px 4px", backgroundColor: "var(--color-card-bg)", border: "1px solid var(--color-border)", fontSize: 14, lineHeight: 1.6 }}>
-              <StreamingText text={streamingText} streaming />
-            </div>
+      {/* Split panes */}
+      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+        {openPanes.map((p, i) => (
+          <div
+            key={p}
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              borderLeft: i > 0 ? "1px solid var(--color-border)" : "none",
+              minWidth: 0,
+            }}
+          >
+            <ChatPane
+              storyId={id}
+              perspective={p}
+              onClose={openPanes.length > 1 ? () => closePane(p) : undefined}
+            />
           </div>
-        )}
-        {ended && (
-          <div style={{ margin: "8px 12px", padding: "10px 14px", backgroundColor: "var(--color-warning-bg)", color: "var(--color-warning-text)", borderRadius: 10, fontSize: 13 }}>
-            Conversation ended: {endedReason}
-          </div>
-        )}
-        <div ref={bottomRef} />
-      </div>
-
-      <div style={{ flexShrink: 0 }}>
-        <ChatInput onSend={(text) => sendMessage(text, perspective)} disabled={streaming || ended} />
+        ))}
       </div>
     </div>
   );

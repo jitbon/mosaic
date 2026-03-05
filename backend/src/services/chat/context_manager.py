@@ -23,9 +23,7 @@ def _get_client() -> AsyncAnthropic:
     return _anthropic_client
 
 
-def get_conversation_context(
-    db: Session, conversation: Conversation
-) -> list[dict]:
+def get_conversation_context(db: Session, conversation: Conversation) -> list[dict]:
     """Build the message history for Claude, respecting token limits."""
     messages = (
         db.query(Message)
@@ -39,10 +37,12 @@ def get_conversation_context(
 
     result = []
     for msg in messages:
-        result.append({
-            "role": msg.role,
-            "content": msg.content,
-        })
+        result.append(
+            {
+                "role": msg.role,
+                "content": msg.content,
+            }
+        )
 
     return result
 
@@ -55,9 +55,7 @@ def _count_context_tokens(messages: list[dict]) -> int:
     return total
 
 
-async def summarize_if_needed(
-    db: Session, conversation: Conversation
-) -> None:
+async def summarize_if_needed(db: Session, conversation: Conversation) -> None:
     """Summarize earlier messages if context exceeds token limit."""
     messages = (
         db.query(Message)
@@ -80,24 +78,24 @@ async def summarize_if_needed(
     if not messages_to_summarize:
         return
 
-    summary_input = "\n".join(
-        f"{m.role}: {m.content}" for m in messages_to_summarize
-    )
+    summary_input = "\n".join(f"{m.role}: {m.content}" for m in messages_to_summarize)
 
     try:
         client = _get_client()
         response = await client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-haiku-4-5-20251001",
             max_tokens=300,
-            messages=[{
-                "role": "user",
-                "content": (
-                    "Summarize the following conversation in 2-3 concise sentences, "
-                    "capturing the key points discussed, positions taken, and any "
-                    "important claims or citations mentioned:\n\n"
-                    f"{summary_input}"
-                ),
-            }],
+            messages=[
+                {
+                    "role": "user",
+                    "content": (
+                        "Summarize the following conversation in 2-3 concise sentences, "
+                        "capturing the key points discussed, positions taken, and any "
+                        "important claims or citations mentioned:\n\n"
+                        f"{summary_input}"
+                    ),
+                }
+            ],
         )
         summary = response.content[0].text
 
