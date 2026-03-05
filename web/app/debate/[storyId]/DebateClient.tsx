@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useDebate } from "@/hooks/useDebate";
-import { useReactions } from "@/hooks/useReactions";
 import { getDebate, getDebates, getPerspectives } from "@/lib/api";
 import DebatePersonaSelector from "@/components/debate/DebatePersonaSelector";
 import DebateTurn from "@/components/debate/DebateTurn";
@@ -24,7 +23,6 @@ export default function DebateClient({ storyId }: { storyId: string }) {
   const [starting, setStarting] = useState(false);
   const [pastDebates, setPastDebates] = useState<DebateSummary[]>([]);
   const { debate, streaming, streamingText, streamingRole, roundComplete, error, start, runRound, interject, setStatus, loadDebate, reset } = useDebate(id);
-  const { reactions, loadReactions, toggleReaction } = useReactions(debate?.id ?? null, "debate");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { getPerspectives(id).then(setPerspectives).catch(() => null); }, [id]);
@@ -34,21 +32,6 @@ export default function DebateClient({ storyId }: { storyId: string }) {
   useEffect(() => {
     getDebates(id).then(setPastDebates).catch(() => null);
   }, [id, debate?.id]);
-
-  // Load reactions when debate is available
-  useEffect(() => {
-    if (debate?.id) {
-      loadReactions();
-    }
-  }, [debate?.id, loadReactions]);
-
-  // Reload reactions after a round finishes streaming
-  useEffect(() => {
-    if (!streaming && debate?.id) {
-      loadReactions();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [streaming]);
 
   async function handleStart() {
     setStarting(true);
@@ -139,8 +122,6 @@ export default function DebateClient({ storyId }: { storyId: string }) {
                   <DebateTurn
                     key={t.id}
                     turn={t}
-                    reactions={reactions[String(t.id)] ?? []}
-                    onReactionToggle={toggleReaction}
                   />
                 ))}
               </div>

@@ -4,10 +4,7 @@ import type {
   ChatRequest,
   Conversation,
   ConversationSummary,
-  EmojiValue,
   PerspectiveAvailabilityResponse,
-  Reaction,
-  ReactionsMap,
 } from "@/types/chat";
 import type {
   DebateCreate,
@@ -115,53 +112,6 @@ export function chatStreamUrl(storyId: number) {
 
 export function debateRoundUrl(debateId: number) {
   return `${BASE}/api/v1/debate/${debateId}/round`;
-}
-
-// Reactions
-export function addMessageReaction(messageId: number, emoji: EmojiValue) {
-  return apiFetch<Reaction>(`/api/v1/reactions/message/${messageId}`, {
-    method: "POST",
-    body: JSON.stringify({ emoji }),
-  });
-}
-
-export function removeMessageReaction(messageId: number, emoji: EmojiValue) {
-  return apiFetch<void>(`/api/v1/reactions/message/${messageId}/${emoji}`, {
-    method: "DELETE",
-  });
-}
-
-export function getMessageReactions(messageId: number) {
-  return apiFetch<{ reactions: Reaction[] }>(
-    `/api/v1/reactions/message/${messageId}`
-  );
-}
-
-export async function getConversationReactions(conversationId: number) {
-  const res = await apiFetch<{ reactions: ReactionsMap }>(
-    `/api/v1/reactions/conversation/${conversationId}`
-  );
-  return res.reactions;
-}
-
-export function addDebateTurnReaction(turnId: number, emoji: EmojiValue) {
-  return apiFetch<Reaction>(`/api/v1/reactions/debate-turn/${turnId}`, {
-    method: "POST",
-    body: JSON.stringify({ emoji }),
-  });
-}
-
-export function removeDebateTurnReaction(turnId: number, emoji: EmojiValue) {
-  return apiFetch<void>(`/api/v1/reactions/debate-turn/${turnId}/${emoji}`, {
-    method: "DELETE",
-  });
-}
-
-export async function getDebateReactions(debateId: number) {
-  const res = await apiFetch<{ reactions: ReactionsMap }>(
-    `/api/v1/reactions/debate/${debateId}`
-  );
-  return res.reactions;
 }
 
 // Unused import kept for type-checking only

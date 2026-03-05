@@ -20,7 +20,6 @@ from src.services.chat.rag_service import (
     format_rag_context,
     retrieve_chunks,
 )
-from src.services.debate.reaction_context import build_debate_reaction_context
 from src.services.debate.summary_service import extract_summary, strip_summary_marker
 from src.services.debate.turn_manager import (
     ROLE_TO_PERSPECTIVE,
@@ -329,11 +328,6 @@ async def stream_debate_round(db: Session, debate: Debate) -> AsyncGenerator[str
         # Build message history from previous turns
         messages = _build_debate_history(db, debate)
 
-        # Build reaction feedback for this persona (reactions from previous round)
-        reaction_block = build_debate_reaction_context(
-            db, debate.id, role, debate.current_round
-        )
-
         # Add a user message to prompt this persona's turn
         if messages:
             # Claude requires alternating user/assistant. Add a user prompt.
@@ -341,8 +335,6 @@ async def stream_debate_round(db: Session, debate: Debate) -> AsyncGenerator[str
                 f"Now it's your turn as the {PERSPECTIVE_LABELS.get(perspective, perspective)} persona. "
                 "Respond to the previous arguments and present your perspective."
             )
-            if reaction_block:
-                turn_prompt = reaction_block + "\n\n" + turn_prompt
             messages.append({"role": "user", "content": turn_prompt})
         else:
             messages.append(

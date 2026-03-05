@@ -19,7 +19,6 @@ from src.services.chat.context_manager import (
 )
 from src.services.chat.persona_service import build_system_prompt
 from src.services.chat.rag_service import format_rag_context, retrieve_chunks
-from src.services.chat.reaction_context import build_reaction_context
 
 logger = logging.getLogger(__name__)
 
@@ -215,25 +214,6 @@ async def stream_chat_response(
         context_summary=conversation.context_summary,
     )
     messages = get_conversation_context(db, conversation)
-
-    # 5b. Inject reaction context if any reactions exist
-    reaction_block = build_reaction_context(db, conversation.id)
-    if reaction_block and messages:
-        # Prepend reaction feedback to the last user message
-        last_user_idx = next(
-            (
-                i
-                for i in range(len(messages) - 1, -1, -1)
-                if messages[i]["role"] == "user"
-            ),
-            None,
-        )
-        if last_user_idx is not None:
-            messages = list(messages)
-            messages[last_user_idx] = {
-                **messages[last_user_idx],
-                "content": reaction_block + "\n\n" + messages[last_user_idx]["content"],
-            }
 
     # 6. Stream from Claude
     client = _get_client()
