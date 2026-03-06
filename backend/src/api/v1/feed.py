@@ -27,7 +27,7 @@ def feed(
         )
 
     result = get_feed(db, limit=limit, offset=offset, filter_type=filter)
-    data = result.model_dump()
+    data = result.model_dump(mode="json")
     cache_set(cache_key, data, ttl=settings.feed_cache_ttl)
     return JSONResponse(
         content=data,

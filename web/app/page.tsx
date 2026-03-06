@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { useFeed } from "@/hooks/useFeed";
 import FilterButtons from "@/components/feed/FilterButtons";
 import StoryCard from "@/components/feed/StoryCard";
@@ -35,16 +36,12 @@ export default function FeedPage() {
       {error && <ErrorBanner message={error.message} onRetry={refresh} />}
 
       <header style={{ padding: "16px 16px 0", backgroundColor: "var(--color-surface-bg)" }}>
-        <h1
-          style={{
-            fontSize: 22,
-            fontWeight: 700,
-            margin: "0 0 12px",
-            color: "var(--color-text-primary)",
-          }}
-        >
-          Mosaic
-        </h1>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+          <Image src="/mosaic.png" alt="Mosaic" width={32} height={32} style={{ borderRadius: 6 }} />
+          <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0, color: "var(--color-text-primary)" }}>
+            Mosaic
+          </h1>
+        </div>
       </header>
 
       <FilterButtons active={filter} onChange={changeFilter} />
