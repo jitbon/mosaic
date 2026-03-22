@@ -160,6 +160,38 @@ def _handle_abuse_check(
     return None
 
 
+def _get_rag_context(
+    db: Session, story_id: int, perspective: str, chunks: list[dict]
+) -> str:
+    """Return RAG context, preferring pre-computed summaries if valid (T031)."""
+    try:
+        from datetime import datetime, timezone
+
+        from src.models.story_summary import StorySummary
+        from src.services.precompute.summary_generator import check_staleness
+
+        now = datetime.now(tz=timezone.utc)
+        summary = (
+            db.query(StorySummary)
+            .filter(
+                StorySummary.story_id == story_id,
+                StorySummary.perspective == perspective,
+                StorySummary.expires_at > now,
+            )
+            .first()
+        )
+        if summary and not check_staleness(db, summary):
+            logger.info(
+                f"Using pre-computed summary for story={story_id} perspective={perspective} "
+                f"({summary.token_count} tokens)"
+            )
+            return f"[PRE-COMPUTED PERSPECTIVE SUMMARY]\n{summary.summary_text}"
+    except Exception as e:
+        logger.warning(f"Failed to look up pre-computed summary: {e}")
+
+    return format_rag_context(chunks, perspective)
+
+
 async def stream_chat_response(
     db: Session,
     story_id: int,
@@ -203,36 +235,130 @@ async def stream_chat_response(
     if conversation.context_summary and not had_summary:
         yield _format_sse({"type": "context_summarized"})
 
-    # 5. Retrieve RAG chunks and build prompt
+    # 5. Retrieve RAG context — use pre-computed summary if available (T031)
     query_text = f"{story.headline}. {user_message}"
     chunks = retrieve_chunks(db, story_id, perspective, query_text)
-    rag_context = format_rag_context(chunks, perspective)
-    system_prompt = build_system_prompt(
+    rag_context = _get_rag_context(db, story_id, perspective, chunks)
+    system_blocks = build_system_prompt(
         perspective=perspective,
         story_headline=story.headline,
         rag_context=rag_context,
         context_summary=conversation.context_summary,
     )
+    # Add cache_control to stable blocks (Block 1: persona rules, Block 2: story+RAG)
+    # Block 3 (summary) is variable — no cache_control
+    cached_blocks = []
+    for i, block in enumerate(system_blocks):
+        if i < 2:
+            cached_blocks.append({**block, "cache_control": {"type": "ephemeral"}})
+        else:
+            cached_blocks.append(block)
+
     messages = get_conversation_context(db, conversation)
+
+    # Pre-call token count estimate for discrepancy tracking (T016)
+    from src.services.chat.chunking_service import count_tokens as _count_tokens
+
+    pre_call_estimate = (
+        sum(_count_tokens(b["text"]) for b in system_blocks)
+        + sum(_count_tokens(m["content"]) for m in messages)
+        + _count_tokens(user_message)
+    )
 
     # 6. Stream from Claude
     client = _get_client()
     full_response = ""
+    usage_data: dict = {}
 
     try:
         async with client.messages.stream(
             model="claude-haiku-4-5-20251001",
             max_tokens=1024,
-            system=system_prompt,
+            system=cached_blocks,
             messages=messages,
         ) as stream:
             async for text in stream.text_stream:
                 full_response += text
                 yield _format_sse({"type": "token", "text": text})
+            final_msg = await stream.get_final_message()
+            usage = final_msg.usage
+            cache_read = getattr(usage, "cache_read_input_tokens", 0) or 0
+            cache_creation = getattr(usage, "cache_creation_input_tokens", 0) or 0
+            estimated_cost = (
+                (usage.input_tokens * settings.model_cost_input_per_million / 1_000_000)
+                + (
+                    usage.output_tokens
+                    * settings.model_cost_output_per_million
+                    / 1_000_000
+                )
+                + (cache_read * settings.model_cost_cache_read_per_million / 1_000_000)
+                + (
+                    cache_creation
+                    * settings.model_cost_cache_write_per_million
+                    / 1_000_000
+                )
+            )
+            usage_data = {
+                "input_tokens": usage.input_tokens,
+                "output_tokens": usage.output_tokens,
+                "cache_creation_tokens": cache_creation,
+                "cache_read_tokens": cache_read,
+                "estimated_cost_usd": round(estimated_cost, 6),
+            }
+            logger.info(
+                f"Chat usage conversation={conversation.id} "
+                f"input={usage.input_tokens} output={usage.output_tokens} "
+                f"cache_creation={cache_creation} cache_read={cache_read} "
+                f"cost=${estimated_cost:.6f}"
+            )
+            # T016: Log discrepancy if pre-call estimate vs provider-reported differs >5%
+            if usage.input_tokens > 0:
+                discrepancy = (
+                    abs(pre_call_estimate - usage.input_tokens) / usage.input_tokens
+                )
+                if discrepancy > 0.05:
+                    logger.warning(
+                        f"Token count discrepancy chat conversation={conversation.id}: "
+                        f"estimated={pre_call_estimate} actual={usage.input_tokens} "
+                        f"discrepancy={discrepancy:.1%}"
+                    )
     except Exception as e:
-        logger.error(f"Claude API error: {e}")
-        yield _format_sse({"type": "error", "code": "llm_error", "message": str(e)})
-        return
+        logger.warning(f"Claude API error with cache_control, retrying without: {e}")
+        # Fallback: retry without cache_control markers
+        try:
+            async with client.messages.stream(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=1024,
+                system=system_blocks,
+                messages=messages,
+            ) as stream:
+                async for text in stream.text_stream:
+                    full_response += text
+                    yield _format_sse({"type": "token", "text": text})
+                final_msg = await stream.get_final_message()
+                usage = final_msg.usage
+                estimated_cost = (
+                    usage.input_tokens
+                    * settings.model_cost_input_per_million
+                    / 1_000_000
+                ) + (
+                    usage.output_tokens
+                    * settings.model_cost_output_per_million
+                    / 1_000_000
+                )
+                usage_data = {
+                    "input_tokens": usage.input_tokens,
+                    "output_tokens": usage.output_tokens,
+                    "cache_creation_tokens": 0,
+                    "cache_read_tokens": 0,
+                    "estimated_cost_usd": round(estimated_cost, 6),
+                }
+        except Exception as e2:
+            logger.error(f"Claude API error: {e2}")
+            yield _format_sse(
+                {"type": "error", "code": "llm_error", "message": str(e2)}
+            )
+            return
 
     # 7. Parse citations
     citations_data = _extract_citations(full_response, chunks)
@@ -257,3 +383,32 @@ async def stream_chat_response(
     db.refresh(assistant_msg)
 
     yield _format_sse({"type": "done", "message_id": assistant_msg.id})
+
+    # 10. Emit usage event (after done)
+    if usage_data:
+        yield _format_sse({"type": "usage", **usage_data})
+
+    # 11. Record usage to DB (T021) and check conversation cost alert (T026)
+    if usage_data:
+        try:
+            from src.services.usage.usage_service import (
+                check_conversation_alert,
+                record_usage,
+            )
+
+            record_usage(
+                db=db,
+                feature_type="chat",
+                model_name="claude-haiku-4-5-20251001",
+                input_tokens=usage_data["input_tokens"],
+                output_tokens=usage_data["output_tokens"],
+                cache_creation_tokens=usage_data["cache_creation_tokens"],
+                cache_read_tokens=usage_data["cache_read_tokens"],
+                story_id=story_id,
+                conversation_id=conversation.id,
+            )
+            check_conversation_alert(db, conversation.id)
+        except Exception as e:
+            logger.error(
+                f"Failed to record usage for conversation {conversation.id}: {e}"
+            )

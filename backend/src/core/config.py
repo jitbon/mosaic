@@ -37,6 +37,28 @@ class Settings(BaseSettings):
     # Debate settings
     debate_context_token_limit: int = 4000
 
+    # Token budget settings
+    token_budget_chat: int = 4000
+    token_budget_debate: int = 6000
+    context_window_recent_messages: int = 6
+    summary_precompute_threshold: int = 5
+    summary_precompute_ttl_hours: int = 24
+
+    # Cost model settings (per million tokens)
+    model_cost_input_per_million: float = 0.80
+    model_cost_output_per_million: float = 4.00
+    model_cost_cache_read_per_million: float = 0.08
+    model_cost_cache_write_per_million: float = 1.00
+
+    # Alert threshold settings
+    alert_conversation_cost_threshold: float = 0.50
+    alert_daily_spend_threshold: float = 50.00
+    alert_cache_hit_rate_minimum: float = 0.40
+    alert_webhook_url: str = ""
+
+    # Usage retention
+    usage_retention_days: int = 90
+
     model_config = {"env_file": str(_ENV_FILE), "env_file_encoding": "utf-8"}
 
 

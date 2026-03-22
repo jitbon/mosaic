@@ -8,10 +8,23 @@ from src.models.source import Source
 
 logger = logging.getLogger(__name__)
 
+try:
+    import tiktoken
 
-def count_tokens(text: str) -> int:
-    """Approximate token count using whitespace splitting (~75% accuracy)."""
-    return len(text.split())
+    _tiktoken_enc = tiktoken.get_encoding("cl100k_base")
+
+    def count_tokens(text: str) -> int:
+        """Count tokens using tiktoken cl100k_base encoding."""
+        if not text:
+            return 0
+        return len(_tiktoken_enc.encode(text))
+
+except ImportError:
+    logger.warning("tiktoken not available, falling back to word-count estimation")
+
+    def count_tokens(text: str) -> int:
+        """Approximate token count using whitespace splitting (~75% accuracy)."""
+        return len(text.split())
 
 
 def chunk_article_text(

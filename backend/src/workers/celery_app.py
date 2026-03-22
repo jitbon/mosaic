@@ -19,5 +19,17 @@ celery_app.conf.update(
             "task": "src.workers.tasks.scheduled_ingestion",
             "schedule": settings.ingestion_interval_minutes * 60,
         },
+        "check-usage-alerts": {
+            "task": "src.workers.tasks.check_usage_alerts",
+            "schedule": 300,  # every 5 minutes
+        },
+        "aggregate-old-usage": {
+            "task": "src.workers.tasks.aggregate_old_usage",
+            "schedule": 86400,  # daily
+        },
+        "cleanup-expired-summaries": {
+            "task": "src.workers.tasks.cleanup_expired_summaries",
+            "schedule": 3600,  # hourly
+        },
     },
 )
