@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from src.api.middleware import LoggingMiddleware
-from src.api.v1 import chat, debate, feed, refresh, story
+from src.api.v1 import admin, chat, debate, feed, refresh, story
 
 app = FastAPI(title="MosaicAI API", version="1.0.0")
 
@@ -23,6 +23,7 @@ app.include_router(story.router, prefix="/api/v1", tags=["story"])
 app.include_router(refresh.router, prefix="/api/v1", tags=["refresh"])
 app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
 app.include_router(debate.router, prefix="/api/v1", tags=["debate"])
+app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
 
 
 @app.get("/health")
