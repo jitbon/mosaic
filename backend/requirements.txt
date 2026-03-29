@@ -25,6 +25,7 @@ packaging==26.0
 prompt_toolkit==3.0.52
 psycopg2-binary==2.9.11
 pydantic==2.12.5
+pydantic[email]>=2.12.5
 pydantic-settings==2.11.0
 pydantic_core==2.41.5
 python-dateutil==2.9.0.post0
@@ -45,6 +46,10 @@ vine==5.1.0
 watchfiles==1.1.1
 wcwidth==0.6.0
 websockets==15.0.1
+
+# Auth feature dependencies
+python-jose[cryptography]==3.3.0
+slowapi>=0.1.9
 
 # Chat feature dependencies
 anthropic>=0.52.0

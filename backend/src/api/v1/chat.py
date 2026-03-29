@@ -1,15 +1,18 @@
 import time
+import uuid
 from collections import defaultdict
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
+from sqlalchemy import func as sa_func
 from sqlalchemy.orm import Session
 
-from sqlalchemy import func as sa_func
-
+from src.core.auth import get_optional_user
 from src.core.config import settings
 from src.core.database import get_db
 from src.models.conversation import Conversation
+from src.models.guest_session import GuestSession
 from src.models.message import Message
 from src.models.story import Story
 from src.schemas.chat import (
@@ -58,12 +61,42 @@ async def chat_stream(
     story_id: int,
     request: ChatRequest,
     db: Session = Depends(get_db),
+    token: Optional[dict] = Depends(get_optional_user),
 ):
     """Stream a chat response from an AI persona via SSE."""
     # Validate story exists
     story = db.query(Story).filter(Story.id == story_id).first()
     if not story:
         raise HTTPException(status_code=404, detail="Story not found")
+
+    # Auth + guest limit enforcement
+    if token is None:
+        raise HTTPException(
+            status_code=401,
+            detail={"code": "UNAUTHORIZED", "message": "Authentication required"},
+        )
+
+    role = token.get("role")
+    sub = token.get("sub")
+
+    if role == "anon" and sub:
+        anon_uuid = uuid.UUID(sub)
+        session = (
+            db.query(GuestSession).filter(GuestSession.user_id == anon_uuid).first()
+        )
+        if session is None:
+            session = GuestSession(user_id=anon_uuid, conversation_count=0)
+            db.add(session)
+            db.commit()
+        if session.conversation_count >= 5:
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "code": "GUEST_LIMIT_REACHED",
+                    "message": "Sign up to continue chatting.",
+                },
+            )
+        pass  # user_id will be wired to stream_chat_response when conversation ownership is implemented
 
     # Rate limiting
     _check_rate_limit(story_id)
@@ -96,9 +129,7 @@ async def get_perspectives(
 
     availability = get_perspective_availability(db, story_id)
     return PerspectiveAvailabilityResponse(
-        perspectives={
-            k: PerspectiveInfo(**v) for k, v in availability.items()
-        }
+        perspectives={k: PerspectiveInfo(**v) for k, v in availability.items()}
     )
 
 
@@ -106,18 +137,19 @@ async def get_perspectives(
 async def list_conversations(
     story_id: int,
     db: Session = Depends(get_db),
+    token: Optional[dict] = Depends(get_optional_user),
 ):
-    """List all conversations for a story."""
+    """List all conversations for a story, filtered to the current user."""
     story = db.query(Story).filter(Story.id == story_id).first()
     if not story:
         raise HTTPException(status_code=404, detail="Story not found")
 
-    conversations = (
-        db.query(Conversation)
-        .filter(Conversation.story_id == story_id)
-        .order_by(Conversation.updated_at.desc())
-        .all()
-    )
+    q = db.query(Conversation).filter(Conversation.story_id == story_id)
+    if token:
+        sub = token.get("sub")
+        if sub:
+            q = q.filter(Conversation.user_id == uuid.UUID(sub))
+    conversations = q.order_by(Conversation.updated_at.desc()).all()
 
     summaries = []
     for conv in conversations:
@@ -141,9 +173,7 @@ async def list_conversations(
                 is_ended=conv.is_ended,
                 created_at=conv.created_at,
                 updated_at=conv.updated_at,
-                last_message_preview=(
-                    last_msg.content[:100] if last_msg else None
-                ),
+                last_message_preview=(last_msg.content[:100] if last_msg else None),
             )
         )
 

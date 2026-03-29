@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     # TODO: Add embedding API key (e.g. VOYAGE_API_KEY) when adding vector search
 
+    # Auth settings (006-user-accounts)
+    supabase_jwt_secret: str = ""
+    supabase_service_role_key: str = ""
+
     chat_rate_limit_per_minute: int = 10
     chat_max_message_length: int = 2000
     chat_context_token_limit: int = 3000

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
 import { useDebate } from "@/hooks/useDebate";
 import { getDebate, getDebates, getPerspectives } from "@/lib/api";
 import DebatePersonaSelector from "@/components/debate/DebatePersonaSelector";
@@ -18,9 +19,11 @@ const ROLE_COLORS: Record<DebateRole, string> = { persona_left: "var(--color-lef
 
 export default function DebateClient({ storyId }: { storyId: string }) {
   const id = Number(storyId);
+  const { isGuest, isAuthenticated } = useAuth();
   const [perspectives, setPerspectives] = useState<PerspectiveAvailabilityResponse | null>(null);
   const [selectedPersonas, setSelectedPersonas] = useState<Perspective[]>(["left", "right"]);
   const [starting, setStarting] = useState(false);
+  const [showGuestModal, setShowGuestModal] = useState(false);
   const [pastDebates, setPastDebates] = useState<DebateSummary[]>([]);
   const { debate, streaming, streamingText, streamingRole, roundComplete, error, start, runRound, interject, setStatus, loadDebate, reset } = useDebate(id);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -34,6 +37,10 @@ export default function DebateClient({ storyId }: { storyId: string }) {
   }, [id, debate?.id]);
 
   async function handleStart() {
+    if (isGuest || !isAuthenticated) {
+      setShowGuestModal(true);
+      return;
+    }
     setStarting(true);
     await start(selectedPersonas);
     setStarting(false);
@@ -156,6 +163,19 @@ export default function DebateClient({ storyId }: { storyId: string }) {
             </div>
           )}
         </>
+      )}
+      {/* Guest debate gate modal */}
+      {showGuestModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200 }}>
+          <div style={{ background: "#111", border: "1px solid #333", borderRadius: 10, padding: 28, maxWidth: 400, width: "90%" }}>
+            <h2 style={{ marginBottom: 12, fontSize: 18 }}>Account required</h2>
+            <p style={{ color: "#aaa", marginBottom: 24, fontSize: 14 }}>Debates require an account. Sign up to participate.</p>
+            <div style={{ display: "flex", gap: 12 }}>
+              <Link href="/auth/signup" style={{ flex: 1, textAlign: "center", padding: "10px 0", background: "var(--color-center)", color: "#fff", borderRadius: 6, fontWeight: 600, textDecoration: "none", fontSize: 14 }}>Sign Up</Link>
+              <button onClick={() => setShowGuestModal(false)} style={{ flex: 1, padding: "10px 0", background: "#333", color: "#fff", border: "none", borderRadius: 6, fontWeight: 600, cursor: "pointer", fontSize: 14 }}>Cancel</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
