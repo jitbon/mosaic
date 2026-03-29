@@ -2,12 +2,14 @@
 
 import time
 from collections import defaultdict
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func as sa_func
 from sqlalchemy.orm import Session
 
+from src.core.auth import get_optional_user
 from src.core.database import get_db
 from src.models.debate import Debate
 from src.models.debate_turn import DebateTurn
@@ -66,8 +68,17 @@ async def start_debate(
     request: DebateCreate,
     req: Request = None,
     db: Session = Depends(get_db),
+    token: Optional[dict] = Depends(get_optional_user),
 ):
     """Create a new debate for a story with selected personas."""
+    if not token or token.get("role") != "authenticated":
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "code": "GUEST_DEBATES_RESTRICTED",
+                "message": "Debates require an account. Sign up to participate.",
+            },
+        )
     client_ip = req.client.host if req and req.client else "unknown"
     _check_rate_limit(_crud_limits, client_ip, 60, label="requests")
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getPerspectives } from "@/lib/api";
 import ChatPane from "@/components/chat/ChatPane";
+import { useAuth } from "@/components/AuthProvider";
 import type { Perspective, PerspectiveAvailabilityResponse } from "@/types/chat";
 
 const ALL_PERSPECTIVES: Perspective[] = ["left", "center", "right"];
@@ -16,8 +17,10 @@ const COLORS: Record<Perspective, string> = {
 
 export default function ChatClient({ storyId }: { storyId: string }) {
   const id = Number(storyId);
+  const { isGuest } = useAuth();
   const [perspectives, setPerspectives] = useState<PerspectiveAvailabilityResponse | null>(null);
   const [openPanes, setOpenPanes] = useState<Perspective[]>(["left"]);
+  const [guestLimitReached, setGuestLimitReached] = useState(false);
 
   useEffect(() => {
     getPerspectives(id).then(setPerspectives).catch(() => null);
@@ -69,6 +72,13 @@ export default function ChatClient({ storyId }: { storyId: string }) {
         })}
       </div>
 
+      {/* Guest limit banner */}
+      {isGuest && guestLimitReached && (
+        <div style={{ padding: "12px 16px", backgroundColor: "rgba(220,50,50,0.12)", borderBottom: "1px solid var(--color-left)", display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+          <span style={{ flex: 1, fontSize: 13, color: "var(--color-left)" }}>You've used all 5 guest chats. Sign up to keep going.</span>
+          <Link href="/auth/signup" style={{ fontSize: 13, fontWeight: 600, color: "#fff", background: "var(--color-center)", padding: "4px 12px", borderRadius: 6, textDecoration: "none" }}>Sign Up</Link>
+        </div>
+      )}
       {/* Split panes */}
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {openPanes.map((p, i) => (

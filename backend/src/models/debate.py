@@ -1,5 +1,5 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String, Text, func
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 
 from src.core.database import Base
@@ -16,6 +16,11 @@ class Debate(Base):
     status = Column(String(20), nullable=False, default="active")
     current_round = Column(Integer, nullable=False, default=0)
     abuse_redirect_count = Column(Integer, nullable=False, default=0)
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("app_users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     context_summary = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
@@ -33,4 +38,5 @@ class Debate(Base):
     __table_args__ = (
         Index("debates_story_id_idx", "story_id"),
         Index("debates_updated_at_idx", "updated_at"),
+        Index("ix_debates_user_id", "user_id"),
     )

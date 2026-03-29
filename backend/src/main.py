@@ -3,11 +3,15 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from src.api.middleware import LoggingMiddleware
-from src.api.v1 import admin, chat, debate, feed, refresh, story
+from src.api.v1 import admin, auth, chat, debate, feed, profile, refresh, story
 
 app = FastAPI(title="MosaicAI API", version="1.0.0")
+app.state.limiter = auth.limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,6 +22,8 @@ app.add_middleware(
 )
 app.add_middleware(LoggingMiddleware)
 
+app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
+app.include_router(profile.router, prefix="/api/v1", tags=["profile"])
 app.include_router(feed.router, prefix="/api/v1", tags=["feed"])
 app.include_router(story.router, prefix="/api/v1", tags=["story"])
 app.include_router(refresh.router, prefix="/api/v1", tags=["refresh"])

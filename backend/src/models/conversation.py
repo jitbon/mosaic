@@ -1,4 +1,15 @@
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, ForeignKey, Index, func
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    func,
+)
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from src.core.database import Base
@@ -18,15 +29,23 @@ class Conversation(Base):
     )
     abuse_redirect_count = Column(Integer, nullable=False, default=0)
     is_ended = Column(Boolean, nullable=False, default=False)
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("app_users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     context_summary = Column(Text, nullable=True)
 
     story = relationship("Story")
     messages = relationship(
-        "Message", back_populates="conversation", cascade="all, delete-orphan",
-        order_by="Message.created_at"
+        "Message",
+        back_populates="conversation",
+        cascade="all, delete-orphan",
+        order_by="Message.created_at",
     )
 
     __table_args__ = (
         Index("ix_conversations_story_perspective", "story_id", "perspective"),
         Index("ix_conversations_updated_at", "updated_at"),
+        Index("ix_conversations_user_id", "user_id"),
     )
