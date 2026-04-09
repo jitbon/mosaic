@@ -28,6 +28,13 @@ trap cleanup EXIT INT TERM
 
 # ── Backend ──────────────────────────────────────────────────────────────────
 
+# Source backend/.env so OS env vars don't override with stale/empty values
+if [ -f "$BACKEND/.env" ]; then
+  set -a
+  source "$BACKEND/.env"
+  set +a
+fi
+
 log "Setting up backend..."
 
 # Ensure venv exists and python works

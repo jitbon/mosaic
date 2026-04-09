@@ -2,9 +2,11 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings
 
-# Walk up from this file to find the repo root .env
-_REPO_ROOT = Path(__file__).resolve().parents[3]
-_ENV_FILE = _REPO_ROOT / ".env"
+# Load both backend/.env (higher priority) and repo root .env (fallback)
+_BACKEND_ROOT = Path(__file__).resolve().parents[2]
+_REPO_ROOT = _BACKEND_ROOT.parent
+_BACKEND_ENV = _BACKEND_ROOT / ".env"
+_ROOT_ENV = _REPO_ROOT / ".env"
 
 
 class Settings(BaseSettings):
@@ -63,7 +65,10 @@ class Settings(BaseSettings):
     # Usage retention
     usage_retention_days: int = 90
 
-    model_config = {"env_file": str(_ENV_FILE), "env_file_encoding": "utf-8"}
+    model_config = {
+        "env_file": (str(_BACKEND_ENV), str(_ROOT_ENV)),
+        "env_file_encoding": "utf-8",
+    }
 
 
 settings = Settings()
